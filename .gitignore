@@ -1,0 +1,33 @@
+#listing file
+*.map
+
+*.lst
+
+
+#proj file
+
+*.dep
+
+*uvgui.*
+*.bak
+
+
+#output file
+
+*.crf
+
+*.d
+
+*.o
+
+*.hex
+
+*.axf
+
+*.htm
+
+*.lnp
+
+*.plg
+
+*.sct

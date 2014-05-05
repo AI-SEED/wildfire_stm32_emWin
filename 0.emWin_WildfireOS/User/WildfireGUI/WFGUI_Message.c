@@ -113,17 +113,20 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 						textLen = MULTIEDIT_GetTextSize(hText);
 						
 						num 		= (char *)malloc(sizeof(char)*numLen);
-						text		= (char *)malloc(sizeof(char)*numLen);
-						textUC	= (char *)malloc(sizeof(char)*numLen);						
+						text		= (char *)malloc(sizeof(char)*numLen);			//UTF8编码可能为3字节一个，可能为1字节一个
+						textUC	= (char *)malloc(sizeof(char)*numLen*2);		//UC编码全为2字节一个			
 						
 						MULTIEDIT_GetText(hNum,num,numLen);//电话号码,数字的UTF8编码即ASCII码，无需转换
 						
-						MULTIEDIT_GetText(hText,text,textLen);//短信内容
+						MULTIEDIT_GetText(hText,text,textLen);//短信内容					
 						
+//						GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)text,numLen,(unsigned short *)textUC,numLen*2);
+//						
+//						sim900a_sms(num,textUC);
+
+						sim900a_sms_utf8(num,text,numLen,textLen);
 						
-						sim900a_sms("15622791609","text");
-						
-						GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)text,numLen,(unsigned short *)textUC,numLen);
+
 						
 						/*释放空间*/
 						free(num);

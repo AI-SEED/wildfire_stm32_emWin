@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
 #include "bsp_SysTick.h"
 #include "bsp_usart1.h"
 #include "bsp_usart2.h"
@@ -249,12 +250,59 @@ void sim900a_gbk2ucs2hex(char * ucs2hex,char * gbk)
 }
 
 
+void sim900a_utf82ucs2hex(char * ucs2hex,char * utf8,uint16_t utf8len)
+{
+	
+	char test[160];
+    char *tmp;
+    tmp = test;
+		//tmp	= (char *)malloc(sizeof(char)*utf8len*2);		//UC编码全为2字节一个			
+		
+		/* 转换成UCS编码 */
+		GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)utf8,utf8len,(unsigned short *)tmp,utf8len*2);
+		
+		while(!(*tmp == 0 && *(tmp+1) == 0))//非结束符
+		{
+			*(WCHAR *)tmp = SIM900A_SWAP16(*(WCHAR *)tmp);
+			
+			if(((*tmp)&0xFF) < 0x7F)      //英文
+        {	
+				
+					sim900a_char2hex(ucs2hex,*tmp);
+					ucs2hex+=2;
+					tmp++;
+					
+					sim900a_char2hex(ucs2hex,*tmp);
+					ucs2hex+=2;
+					tmp++;
+					
+        }
+			else
+			{			
+				sim900a_char2hex(ucs2hex,(char)(*tmp));
+				ucs2hex+=2;
+				tmp++;
+				sim900a_char2hex(ucs2hex,(char)(*tmp));
+				ucs2hex+=2;
+				tmp++;
+			}
+		}
+		
+    *ucs2hex=0;
+		
+		free((char *)tmp);
+		tmp = NULL;
+}
+
+
 //发送短信（支持中英文,中文为GBK码）
 void sim900a_sms(char *num,char *smstext)
 {
     char ucsbuff[160];
+	  char end[2] = {0x1A,0x00};
+
     SIM900A_CLEAN_RX();                 //清空了接收缓冲区数据
-    
+	
     if(IsASSIC(smstext)==SIM900A_TURE)
     {
         //英文
@@ -291,8 +339,60 @@ void sim900a_sms(char *num,char *smstext)
         //SIM900A_DELAY(100);
     }
     
-    sim900a_tx_printf("%c",0x1A);
+    sim900a_tx_printf("%s",end);
 }
+
+
+
+//发送短信（支持中英文,输入时使用UTF8编码）
+void sim900a_sms_utf8(char *num,char *smstext,uint16_t numlen,uint16_t textlen)
+{
+    char ucsbuff[160];
+	  char end[2] = {0x1A,0x00};
+
+    SIM900A_CLEAN_RX();                 //清空了接收缓冲区数据
+	
+    if(IsASSIC(smstext)==SIM900A_TURE)
+    {
+        //英文
+        sim900a_tx_printf("AT+CSCS=\"GSM\"\r");     //"GSM"字符集
+        SIM900A_DELAY(100);
+        
+        sim900a_tx_printf("AT+CMGF=1\r");           //文本模式
+        SIM900A_DELAY(100);
+        
+        sim900a_tx_printf("AT+CMGS=\"%s\"\r",num);  //电话号码
+        SIM900A_DELAY(100);
+
+        sim900a_tx_printf("%s",smstext);            //短信内容
+        //SIM900A_DELAY(100);          
+    }
+    else
+    {
+        //中文
+        sim900a_tx_printf("AT+CSCS=\"UCS2\"\r");    //"UCS2"字符集
+        SIM900A_DELAY(100);
+        
+        sim900a_tx_printf("AT+CMGF=1\r");           //文本模式
+        SIM900A_DELAY(100);
+        
+        sim900a_tx_printf("AT+CSMP=17,167,0,8\r");  //
+        SIM900A_DELAY(100);
+        
+        sim900a_utf82ucs2hex(ucsbuff,num,numlen);
+        sim900a_tx_printf("AT+CMGS=\"%s\"\r",ucsbuff);  //UCS2的电话号码(需要转成 ucs2码)
+        SIM900A_DELAY(100);
+
+        sim900a_utf82ucs2hex(ucsbuff,smstext,textlen);
+        sim900a_tx_printf("%s\r",ucsbuff);          //UCS2的文本内容(需要转成 ucs2码)
+        //SIM900A_DELAY(100);			
+
+    }
+    
+    sim900a_tx_printf("%s",end);
+}
+
+
 
 void sim900a_gprs_init(void)
 {

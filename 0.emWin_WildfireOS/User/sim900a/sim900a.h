@@ -63,6 +63,7 @@ extern 	uint8_t 		sim900a_init								(void);															//初始化并检测模块
 extern  uint8_t     sim900a_cnum                (char *num);                        //获取本机号码
 extern  void        sim900a_call                (char *num);                        //发起拨打电话（不管接不接通）
 extern  void        sim900a_sms                 (char *num,char *smstext);          //发送短信（支持中英文,中文为GBK码）
+extern	void 				sim900a_sms_utf8						(char *num,char *smstext,uint16_t numlen,uint16_t textlen);//发送短信（支持中英文,输入时使用UTF8编码）
 
 extern  char *      sim900a_waitask             (uint8_t waitask_hook(void));       //等待有数据应答，返回接收缓冲区地址
 

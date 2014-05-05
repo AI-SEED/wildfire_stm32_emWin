@@ -48,6 +48,7 @@
 #include "WFGUI_Phone.h"
 #include "WFGUI_Camera.h"
 #include "WFGUI_Snapshot.h"
+#include "WFGUI_ImageReader.h"
 
 #include "WFGUI_Keypad.h"
 #include "WFGUI_Temperature.h"
@@ -89,12 +90,12 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 static const BITMAP_ITEM _aBitmapItem[] = {
 //  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
 //  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
-		{&bmWF_Message, "Message"   , "Read or write message"},
+//		{&bmWF_Message, "Message"   , "Read or write message"},
 //  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
 //  {&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
 //  {&bmWF_Camera,"Camera", "Take a phone"},
-//	{&bmWF_Picture,  "Picture" , "Picture viewer"},
+	{&bmWF_Picture,  "Picture" , "Picture viewer"},
 //	{&bmWF_Map,  "Map" , "Map"},
 //  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
 
@@ -493,6 +494,7 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
 		 
 			default:		
       WM_DefaultProc(pMsg);
+			break;
 		 
 	 }
 
@@ -746,8 +748,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 
 									ShowTips(pMsg->hWin);					//提示让用户等待
 
-								
-									WFGUI_Message();				
+									WFGUI_ImageReader();				
 
 								break;
 #endif											

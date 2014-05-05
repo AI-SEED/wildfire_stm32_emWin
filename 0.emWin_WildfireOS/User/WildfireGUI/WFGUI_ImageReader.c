@@ -727,3 +727,118 @@ void PNGReader( char * file_name) {
 
   f_close(&hFile);
 }
+
+
+
+/**
+  * @brief  _cbImageAPPWin,图片APP回调函数
+  * @param  none
+  * @retval none
+  */
+static void _cbImageAPPWin(WM_MESSAGE * pMsg)
+{
+	WM_HWIN   hWin;
+	WM_HWIN		hButton;
+	WM_HWIN 	hImage;
+
+	
+	int        NCode;
+  int        Id;
+	int        Sel;
+	
+	char 			 i;
+	
+	hWin = pMsg->hWin;	
+
+	switch (pMsg->MsgId) 
+	{
+		case WM_CREATE:	
+			/* 创建按键 */
+			hButton = BUTTON_CreateEx(75,WinPara.ySizeWin-20,40, 20, 
+																		pMsg->hWin, WM_CF_SHOW,0, GUI_ID_BUTTON0);
+		
+			BUTTON_SetText(hButton, "<");
+		
+		
+			hButton = BUTTON_CreateEx(125,WinPara.ySizeWin-20,40, 20, 
+																		pMsg->hWin, WM_CF_SHOW,0, GUI_ID_BUTTON1);
+		
+			BUTTON_SetText(hButton, ">");
+		
+//			/* 创建图片阅读器 */
+//			hImage = IMAGE_CreateEx(0,0,XSizeWin,YSizeWin,hFrameC,WM_CF_SHOW,0,GUI_ID_IMAGE0);
+//			IMAGE_SetPNGEx(hImage,_GetPngData, &hFile);		
+
+		
+			
+		
+			break;			
+		
+		case WM_NOTIFY_PARENT:
+		 
+			
+			
+		break;
+			
+		
+		
+		case WM_DELETE:			
+				
+			/* 删除app句柄链表里的记录 */	
+			App_Delete(pMsg->hWin);
+		
+			/* 发送消息通知ctrl窗口*/		
+			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+			break;
+		
+		case WM_PAINT:
+			
+			GUI_SetColor(GUI_BLACK);
+			GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin),WM_GetWindowSizeY(pMsg->hWin));
+		
+			break;
+		
+		default:
+			break;
+		
+	}
+	
+	
+}
+
+
+/**
+  * @brief  WFGUI_ImageReader 图片浏览器主函数
+	*					
+  * @param  none
+  * @retval none
+  */
+void WFGUI_ImageReader(void)
+{
+	
+	WM_HWIN hImage;	
+	
+	/* 创建短信窗口 */
+	hImage = WM_CreateWindowAsChild(0,
+																	0,
+																	WinPara.xSizeWin,
+																	WinPara.ySizeWin ,
+																	WinPara.hWinMain ,
+																	WM_CF_SHOW , 
+																	_cbImageAPPWin,
+																	0);	
+	
+		/* 把app句柄插入链表 */
+	App_Insert(hImage);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	
+	
+
+
+}
+
+
+
+

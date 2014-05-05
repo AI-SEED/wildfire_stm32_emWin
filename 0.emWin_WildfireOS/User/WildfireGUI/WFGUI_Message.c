@@ -24,12 +24,12 @@ static const BITMAP_ITEM _MessageIcon[] = {
 
 
 /**
-  * @brief  _cbMessageWin framewin框架的回调函数
+  * @brief  _cbMesgCtrlWin framewin框架的回调函数
 	*					
   * @param  none
   * @retval none
   */
-static void _cbMessageWin(WM_MESSAGE * pMsg)
+static void _cbMesgCtrlWin(WM_MESSAGE * pMsg)
 {
 	int  Id;
 	
@@ -173,9 +173,16 @@ static void Mesg_New(char *path)
 	WM_HWIN hEdit;
 	WM_HWIN hButton;
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
 
+	/* 把app句柄插入链表 */
 	App_Insert(hFrame);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	//WM_SetCallback(hFrame,_cbSDViewWin);
+
+	//	TBD 使用回调函数会出现无法移动框架窗口的情况
+	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
 	
 	/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
@@ -361,8 +368,18 @@ static void Mesg_InBox(void)
 	WM_HWIN hListView;	
 	WM_HWIN hHeader;
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
 
+		/* 把app句柄插入链表 */
+	App_Insert(hFrame);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	//WM_SetCallback(hFrame,_cbSDViewWin);
+
+	//	TBD 使用回调函数会出现无法移动框架窗口的情况
+	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+
+	
 	/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
 
@@ -397,7 +414,17 @@ static void Mesg_OutBox(void)
 	
 	const GUI_ConstString NewMesg[]={"NewMesg","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
+
+		/* 把app句柄插入链表 */
+	App_Insert(hFrame);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	//WM_SetCallback(hFrame,_cbSDViewWin);
+
+	//	TBD 使用回调函数会出现无法移动框架窗口的情况
+	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+
 
 	/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
@@ -420,11 +447,6 @@ static void Mesg_OutBox(void)
 	LISTVIEW_AddColumn(hListView, WM_GetWindowSizeX(hFrameC)/2, "Shortcut",GUI_TA_CENTER);
 	
 	LISTVIEW_AddRow(hListView,NewMesg);
-	
-	
-
-
-
 
 }
 
@@ -442,8 +464,18 @@ static void Mesg_DraftBox(void)
 	
 	const GUI_ConstString NewDraft[]={"NewDraft","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
 
+	/* 把app句柄插入链表 */
+	App_Insert(hFrame);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	//WM_SetCallback(hFrame,_cbSDViewWin);
+
+	//	TBD 使用回调函数会出现无法移动框架窗口的情况
+	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+
+	
 	/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
 
@@ -483,10 +515,40 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
   int        Id;
 	int        Sel;
 	
+	char 			 i;
+	
 	hWin = pMsg->hWin;	
 
 	switch (pMsg->MsgId) 
 	{
+		case WM_CREATE:	
+			/*
+			* 创建图标控件
+			*/
+			hIcon = ICONVIEW_CreateEx(20, 0,  WinPara.xSizeWin,  WinPara.ySizeWin, 
+															 pMsg->hWin, WM_CF_SHOW | WM_CF_HASTRANS, 
+															 0, GUI_ID_ICONVIEW0, 55, 70);
+			
+			/*
+			* 添加图标到图标控件
+			*/
+			for (i = 0; i < GUI_COUNTOF(_MessageIcon); i++) {    
+
+			ICONVIEW_AddBitmapItem(hIcon, _MessageIcon[i].pBitmap, _MessageIcon[i].pText);
+			}		
+
+			/* 设置选定图标的颜色 */
+			ICONVIEW_SetBkColor(hIcon, ICONVIEW_CI_SEL, GUI_BLUE | 0xC0000000);
+			
+			/* 设置图标的字体 */
+			ICONVIEW_SetFont(hIcon, &GUI_Font13B_ASCII);
+			
+			/* 设置初始选择的图标为 -1 (表示尚未选择)*/
+			ICONVIEW_SetSel(hIcon,-1);		
+		
+		
+			break;			
+		
 		case WM_NOTIFY_PARENT:
 		 
 			Id    = WM_GetId(pMsg->hWinSrc);      // 控件的ID
@@ -539,6 +601,16 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 		default:
 			break;
 		
+		case WM_DELETE:			
+				
+			/* 删除app句柄链表里的记录 */	
+			App_Delete(pMsg->hWin);
+		
+			/* 发送消息通知ctrl窗口*/		
+			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+			break;
+		
 		case WM_PAINT:
 			
 			GUI_SetColor(GUI_BLACK);
@@ -553,7 +625,6 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 
 
 
-
 /**
   * @brief  WFGUI_Message,短信
   * @param  none
@@ -561,58 +632,24 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
   */
 void WFGUI_Message(void)
 {
-	WM_HWIN hFrame;
-	WM_HWIN hFrameC;
-	WM_HWIN hIcon;
+	WM_HWIN hMessage;
 	
-	uint8_t i;
-	
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN9,"Message",0);
-	
-	/* 创建窗口按钮 */
-  FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+	/* 创建短信窗口 */
+	hMessage = WM_CreateWindowAsChild(0,
+																		0,
+																		WinPara.xSizeWin,
+																		WinPara.ySizeWin ,
+																		WinPara.hWinMain ,
+																		WM_CF_SHOW | WM_CF_STAYONTOP, 
+																		_cbMesgWin,
+																		0);	
 	
 		/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	App_Insert(hMessage);
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
-
-	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMessageWin);	//获取旧的回调函数指针
-
-	
-	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
-	
-	FRAMEWIN_SetClientColor(hFrame,GUI_BLACK);
-	/*
-  * 创建图标控件
-  */
-  hIcon = ICONVIEW_CreateEx(20, 0, WM_GetWindowSizeX(hFrameC)-20,  WM_GetWindowSizeY(hFrameC), 
-                           hFrameC, WM_CF_SHOW | WM_CF_HASTRANS, 
-                           0, GUI_ID_ICONVIEW0, 55, 70);
-	
-	/*
-	* 添加图标到图标控件
-	*/
-	for (i = 0; i < GUI_COUNTOF(_MessageIcon); i++) {    
-
-  ICONVIEW_AddBitmapItem(hIcon, _MessageIcon[i].pBitmap, _MessageIcon[i].pText);
-  }		
-
-	/* 设置选定图标的颜色 */
-  ICONVIEW_SetBkColor(hIcon, ICONVIEW_CI_SEL, GUI_BLUE | 0xC0000000);
-	
-	/* 设置图标的字体 */
-  ICONVIEW_SetFont(hIcon, &GUI_Font13B_ASCII);
-	
-	/* 设置初始选择的图标为 -1 (表示尚未选择)*/
-	ICONVIEW_SetSel(hIcon,-1);		
-	
-	/* 设置信息api的回调函数 */
-	WM_SetCallback(hFrameC,_cbMesgWin);
-	
 }
+
+
 
 

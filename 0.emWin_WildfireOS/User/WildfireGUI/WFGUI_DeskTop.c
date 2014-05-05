@@ -89,8 +89,8 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 static const BITMAP_ITEM _aBitmapItem[] = {
 //  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
 //  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
-//		{&bmWF_Message, "Message"   , "Read or write message"},
-  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
+		{&bmWF_Message, "Message"   , "Read or write message"},
+//  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
 //  {&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
 //  {&bmWF_Camera,"Camera", "Take a phone"},
@@ -747,7 +747,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 									ShowTips(pMsg->hWin);					//提示让用户等待
 
 								
-									WFGUI_Phone();				
+									WFGUI_Message();				
 
 								break;
 #endif											
@@ -1113,7 +1113,6 @@ static void CreatCtrlWin(void)
   */
 static void CreatMainWin(void)
 {
-	WM_HWIN  hText;
 	WM_HWIN  hWin;
   unsigned i;
 	
@@ -1129,15 +1128,15 @@ static void CreatMainWin(void)
 	
 //	WM_SetUserData(WinPara.hWinMain, &pPara, sizeof(WIN_PARA *));//设置窗口的用户数据
 		/* 创建icon图标窗口 */
-	hText = WM_CreateWindowAsChild(	0 ,											
-																	0 ,	//位置
-																	WinPara.xSizeWin * VIRTUAL_WIN_NUM,
-																	WinPara.ySizeWin,	//高
-																	WinPara.hWinMain,
-																	WM_CF_SHOW | WM_CF_MEMDEV|WM_CF_MOTION_X,
-																	_cbIconWin,
-																	0
-																	);
+	 WM_CreateWindowAsChild(	0 ,											
+														0 ,	//位置
+														WinPara.xSizeWin * VIRTUAL_WIN_NUM,
+														WinPara.ySizeWin,	//高
+														WinPara.hWinMain,
+														WM_CF_SHOW | WM_CF_MEMDEV|WM_CF_MOTION_X,
+														_cbIconWin,
+														0
+														);
 																	
 	
 

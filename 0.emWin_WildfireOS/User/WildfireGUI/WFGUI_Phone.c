@@ -266,6 +266,9 @@ static void _cbPhoneKey(WM_MESSAGE * pMsg)
 					//拨打电话号码
 					sim900a_call(num);
 					
+					/* 释放空间 */
+					free(num);
+					
 					#if 0
 					rebuff = sim900a_waitask(0);
 					switch(rebuff[3])

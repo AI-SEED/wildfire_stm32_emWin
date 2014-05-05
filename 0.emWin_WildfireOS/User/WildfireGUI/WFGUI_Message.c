@@ -1,9 +1,15 @@
 
+#include <stdlib.h>
+
 #include "WFGUI_Message.h"
 #include "WFGUI_Keypad.h"
 
 #include "DIALOG.h"
 #include "ff.h"
+
+#include "sim900a.h"
+#include "bsp_usart2.h"
+
 
 
 #define MAX_PATH 256
@@ -76,10 +82,19 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
   int Id;
 	int xSize,ySize;
 	
-	char num[50];
-	char mesg[200];
+	int numLen;
+	int textLen;
 	
-	WM_MESSAGE Close_Msg;
+	char *num;
+	char *text;
+	char *textUC;
+	
+	//WM_MESSAGE Close_Msg;
+	WM_HWIN hNum;
+	WM_HWIN hText;
+	
+	hNum  = WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT0);
+	hText = WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT1);
 	
   switch (pMsg->MsgId) {
 		
@@ -91,36 +106,51 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 		switch(NCode){
 				 
 				 case WM_NOTIFICATION_RELEASED:
-					if(Id == GUI_ID_BUTTON0)//发送按钮
-					{
-						MULTIEDIT_GetText(WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT0),num,sizeof(num));//电话号码
+					if(Id == GUI_ID_BUTTON0)				//发送按钮
+					{						
+						/*获取数据长度*/
+						numLen  = MULTIEDIT_GetTextSize(hNum);
+						textLen = MULTIEDIT_GetTextSize(hText);
 						
-						MULTIEDIT_GetText(WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT1),mesg,sizeof(mesg));//短信内容
+						num 		= (char *)malloc(sizeof(char)*numLen);
+						text		= (char *)malloc(sizeof(char)*numLen);
+						textUC	= (char *)malloc(sizeof(char)*numLen);						
+						
+						MULTIEDIT_GetText(hNum,num,numLen);//电话号码,数字的UTF8编码即ASCII码，无需转换
+						
+						MULTIEDIT_GetText(hText,text,textLen);//短信内容
 						
 						
-
+						sim900a_sms("15622791609","text");
 						
+						GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)text,numLen,(unsigned short *)textUC,numLen);
+						
+						/*释放空间*/
+						free(num);
+						free(textUC);
+						free(text);
+											
 					}
-					else if(Id == GUI_ID_BUTTON1)
+					else if(Id == GUI_ID_BUTTON1)		//保存按钮
 					{
 						FIL hFile;
 						FRESULT res;
 						UINT rwb;
 						
-						MULTIEDIT_GetText(WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT0),num,sizeof(num));//电话号码
+						MULTIEDIT_GetText(hNum,num,sizeof(num));//电话号码
 						
-						MULTIEDIT_GetText(WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT1),mesg,sizeof(mesg));//短信内容
+						MULTIEDIT_GetText(hText,text,sizeof(text));//短信内容
 						
 						res = f_open(&hFile,"0:WF_OS/Mesg/draftbox/newdraft.txt",FA_WRITE|FA_CREATE_ALWAYS);
 						
 						f_write(&hFile,num,sizeof(num),&rwb);
 						
-						f_write(&hFile,mesg,sizeof(mesg),&rwb);
+						f_write(&hFile,text,sizeof(text),&rwb);
 						
 						f_close(&hFile);
 
 					}
-					else if(Id == GUI_ID_BUTTON2)
+					else if(Id == GUI_ID_BUTTON2)		//取消按钮
 					{				
 
 						/* 关闭窗口 */
@@ -647,6 +677,12 @@ void WFGUI_Message(void)
 		/* 把app句柄插入链表 */
 	App_Insert(hMessage);
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+		/* 初始化并检测模块 */
+	if (sim900a_init()!= 0)
+	{
+		GUI_MessageBox("\r\n No detected SIM900A module! \r\n","error",GUI_MESSAGEBOX_CF_MOVEABLE);
+		}
 	
 }
 

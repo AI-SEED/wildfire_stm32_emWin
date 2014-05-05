@@ -3331,11 +3331,11 @@ void KeypadInit(WM_HWIN hFrame) {
 	BUTTON_SetDefaultSkin(BUTTON_SKIN_FLEX);
 #endif
 	
-	/* 清楚键盘信息 */
+	/* 清除键盘信息 */
 	clrindex();
 
   /* 创建键盘 */ 
-  hKeypad = WM_CreateWindowAsChild(0, 120, 240, 140,hFrame , WM_CF_SHOW | WM_CF_STAYONTOP, _cbKeyPad, 0);
+  hKeypad = WM_CreateWindowAsChild(0, 110, 240, 140,hFrame , WM_CF_SHOW | WM_CF_STAYONTOP, _cbKeyPad, 0);
 
 }
 

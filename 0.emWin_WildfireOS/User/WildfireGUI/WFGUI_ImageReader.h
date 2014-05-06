@@ -11,6 +11,8 @@ void JPEGReader(char * file_name);
 void PNGReader(char * file_name);
 void GIFReader(char * file_name);
 
+void WFGUI_ImageReader(void);
+
 
 
 

@@ -14,6 +14,7 @@
 JLinkLog.txt
 
 #output file
+*.iex
 
 *.crf
 

@@ -206,7 +206,7 @@ static void Mesg_New(char *path)
 	WM_HWIN hEdit;
 	WM_HWIN hButton;
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
 
 	/* 把app句柄插入链表 */
 	App_Insert(hFrame);
@@ -401,7 +401,7 @@ static void Mesg_InBox(void)
 	WM_HWIN hListView;	
 	WM_HWIN hHeader;
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
 
 		/* 把app句柄插入链表 */
 	App_Insert(hFrame);
@@ -447,7 +447,7 @@ static void Mesg_OutBox(void)
 	
 	const GUI_ConstString NewMesg[]={"NewMesg","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
 
 		/* 把app句柄插入链表 */
 	App_Insert(hFrame);
@@ -497,7 +497,7 @@ static void Mesg_DraftBox(void)
 	
 	const GUI_ConstString NewDraft[]={"NewDraft","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW|WM_CF_STAYONTOP,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
+	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
 
 	/* 把app句柄插入链表 */
 	App_Insert(hFrame);
@@ -631,8 +631,7 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 			
 		break;
 			
-		default:
-			break;
+	
 		
 		case WM_DELETE:			
 				
@@ -649,6 +648,9 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 			GUI_SetColor(GUI_BLACK);
 			GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin),WM_GetWindowSizeY(pMsg->hWin));
 		
+			break;
+		
+			default:
 			break;
 		
 	}
@@ -673,7 +675,7 @@ void WFGUI_Message(void)
 																		WinPara.xSizeWin,
 																		WinPara.ySizeWin ,
 																		WinPara.hWinMain ,
-																		WM_CF_SHOW | WM_CF_STAYONTOP, 
+																		WM_CF_SHOW , 
 																		_cbMesgWin,
 																		0);	
 	

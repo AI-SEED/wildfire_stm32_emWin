@@ -252,12 +252,17 @@ void sim900a_gbk2ucs2hex(char * ucs2hex,char * gbk)
 
 void sim900a_utf82ucs2hex(char * ucs2hex,char * utf8,uint16_t utf8len)
 {
-	
-	char test[160];
-    char *tmp;
-    tmp = test;
-		//tmp	= (char *)malloc(sizeof(char)*utf8len*2);		//UC编码全为2字节一个			
+    char *ucs,*tmp;//ucs用于存储unicode变量，tmp用作unicode变量的指针运算，如果运算后free tmp会出错
 		
+		ucs	= (char *)malloc(sizeof(char)*utf8len*2);		//UC编码全为2字节一个			
+		
+		if(ucs == NULL)
+		{
+				return;
+		}
+	
+		tmp = ucs;	
+	
 		/* 转换成UCS编码 */
 		GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)utf8,utf8len,(unsigned short *)tmp,utf8len*2);
 		
@@ -290,8 +295,8 @@ void sim900a_utf82ucs2hex(char * ucs2hex,char * utf8,uint16_t utf8len)
 		
     *ucs2hex=0;
 		
-		free((char *)tmp);
-		tmp = NULL;
+		free(ucs);
+		ucs = NULL;
 }
 
 

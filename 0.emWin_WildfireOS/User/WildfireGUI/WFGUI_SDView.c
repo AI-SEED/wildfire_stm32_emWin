@@ -14,12 +14,7 @@
 static FRESULT scan_files (char* path,char*file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode) ;
 static void OpenFileProcess(int sel_num);
 
-#define FILE_NAME_LEN 	150			//文件名长度，如果检测到文件名超过50 则丢弃这个文件 
-#define PATH_LEN				100
-#define MUSIC_NAME_LEN 	24			//LCD显示的文件名的最大长度
-#define _DF1S	0x81
 
-#define FILE_LIST_PATH "0:WF_OS/filelist.txt"
 
  //char file_name[FILE_NAME_LEN];
 

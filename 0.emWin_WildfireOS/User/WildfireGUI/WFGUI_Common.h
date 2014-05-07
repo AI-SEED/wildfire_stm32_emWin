@@ -39,6 +39,16 @@
 
 
 
+#define FILE_NAME_LEN 	150			//文件名长度，如果检测到文件名超过50 则丢弃这个文件 
+#define PATH_LEN				100
+#define MUSIC_NAME_LEN 	24			//LCD显示的文件名的最大长度
+#define _DF1S	0x81
+
+#define FILE_LIST_PATH 			"0:WF_OS/filelist.txt"					//文件记录列表文件的目录
+#define IMAGE_LIST_PATH 		"0:WF_OS/imagelist.txt"					//图片文件记录列表文件的目录
+
+
+
 typedef struct WIN_PARA{			//窗口使用到的用户定义参数，方便在回调函数中使用
   int xSizeLCD, ySizeLCD;			//LCD屏幕尺寸
   int xPosWin, yPosWin;				//窗口的起始位置

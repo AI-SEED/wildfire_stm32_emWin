@@ -82,6 +82,8 @@ typedef struct
 
 }SD_FONT;
 
+enum IMAGE_TYPE {BMP,JPEG,GIF,PNG};
+
 
 extern WIN_PARA WinPara;			//用户使用的窗口额外数据
 extern SD_FONT SDFont;

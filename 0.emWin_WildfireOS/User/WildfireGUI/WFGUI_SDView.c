@@ -214,21 +214,13 @@ static void OpenFileProcess(int sel_num)
 				TextReader(file_name);
 				
 			}
-			else if(strstr(file_name,".bmp")||strstr(file_name,".BMP"))
+			else if(strstr(file_name,".bmp")||strstr(file_name,".BMP")||
+								strstr(file_name,".jpg")||strstr(file_name,".JPG")||
+									strstr(file_name,".png")||strstr(file_name,".PNG")||
+										strstr(file_name,".gif")||strstr(file_name,".GIF"))
 			{
-				BMPReader(file_name);
-			}
-			else if(strstr(file_name,".jpg")||strstr(file_name,".JPG"))
-			{
-				JPEGReader(file_name);
-			}
-			else if(strstr(file_name,".png")||strstr(file_name,".PNG"))
-			{
-				PNGReader(file_name);
-			}
-			else if(strstr(file_name,".gif")||strstr(file_name,".GIF"))
-			{
-				GIFReader(file_name);
+				/* œ‘ æÕº∆¨ */
+				ImageReader_FrameWin(file_name);
 			}
 			else if(strstr(file_name,".mp3")||strstr(file_name,".MP3")||strstr(file_name,".wav")||strstr(file_name,".WAV"))
 			{

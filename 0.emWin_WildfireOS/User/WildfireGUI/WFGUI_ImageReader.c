@@ -27,9 +27,9 @@ __align(4) char _acBuffer[1024*4] ;
 
 
 static WM_CALLBACK*     _pcbOldImageWin = NULL;
-static int 							ImageNum				=	0;
+static __IO int 				ImageNum				=	0;
 
-static void Image_Display(int sel_num);
+static void Image_Display(int sel_num,WM_HWIN hParent);
 
 
 
@@ -125,7 +125,7 @@ static int _GetData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off)
 	*		
   * @retval 无
   */
-static int _GetPngData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off) {
+static int _GetPNGData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off) {
   UINT NumBytesRead;
   FIL * phFile;
 	FRESULT fres;
@@ -219,6 +219,297 @@ static void _cbImageWin(WM_MESSAGE * pMsg)
 	
 }
 
+
+
+/**
+  * @brief  GUI_JPEG_GetXSizeEx JPEG格式图片的获取X大小函数
+  * @param  
+	*		
+  * @retval 无
+  */
+static int GUI_JPEG_GetXSizeEx(GUI_GET_DATA_FUNC * pfGetData, void * p)
+{
+	GUI_JPEG_INFO JPEGInfo;
+	
+  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo);                     /* Get JPEG info structure */
+	
+	return JPEGInfo.XSize;
+}
+
+/**
+  * @brief  GUI_JPEG_GetYSizeEx JPEG格式图片的获取Y大小函数
+  * @param  
+	*		
+  * @retval 无
+  */
+static int GUI_JPEG_GetYSizeEx(GUI_GET_DATA_FUNC * pfGetData, void * p)
+{
+	GUI_JPEG_INFO JPEGInfo;
+	
+  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo);                     /* Get JPEG info structure */
+	
+	return JPEGInfo.YSize;
+}
+
+
+/**
+  * @brief  GUI_PNG_DrawScaledEx 按比例显示PNG图片，由于PNG没有按比例显示图片的函数，这里是直接显示的
+  * @param  
+	*		
+  * @retval 无
+  */
+static int GUI_PNG_DrawScaledEx(GUI_GET_DATA_FUNC * pfGetData, void * p, int x0, int y0, int Num, int Denom)
+{
+		GUI_PNG_DrawEx( pfGetData,  p, 0, 0);
+
+}
+
+/**
+  * @brief  GUI_GIF_ActiveDrawEx 直接显示GIF动态图片
+  * @param  
+	*		
+  * @retval 无
+  */
+static int GUI_GIF_ActiveDrawEx(GUI_GET_DATA_FUNC * pfGetData, void * p, int x0, int y0)
+{
+	int j;
+	GUI_GIF_INFO       GifInfo   = {0}; /* Info structure of GIF file */
+  GUI_GIF_IMAGE_INFO ImageInfo = {0}; /* Info structure of one particular GIF image of the GIF file */
+
+	
+	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                     /* Get GIF info structure */
+
+	for (j = 0; j < GifInfo.NumImages; j++) 
+			{
+					GUI_GIF_DrawSubEx(pfGetData,p, x0, y0,j);            /* Draw sub image */
+					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);       /* Get sub image information */
+					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);    /* Use the Delay member of the ImageInfo structure for waiting a while */
+				}		
+
+}
+
+
+/**
+  * @brief  GUI_GIF_ActiveDrawScaledEx 按比例显示GIF动态图片
+  * @param  
+	*		
+  * @retval 无
+  */
+static int GUI_GIF_ActiveDrawScaledEx(GUI_GET_DATA_FUNC * pfGetData, void * p, int x0, int y0, int Num, int Denom)
+{
+	int j;
+	GUI_GIF_INFO       GifInfo   = {0}; /* Info structure of GIF file */
+  GUI_GIF_IMAGE_INFO ImageInfo = {0}; /* Info structure of one particular GIF image of the GIF file */
+
+	
+	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                     /* Get GIF info structure */
+
+	for (j = 0; j < GifInfo.NumImages; j++) 
+			{
+					GUI_GIF_DrawSubScaledEx(pfGetData,p, x0, y0,j,Num,Denom);            /* Draw sub image */
+					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);       /* Get sub image information */
+					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);    /* Use the Delay member of the ImageInfo structure for waiting a while */
+				}		
+
+}
+
+
+/**
+  * @brief  ImageReader_Raw 显示图片
+  * @param  file_name 图片文件名 ，hParent 父窗口句柄
+	*		
+  * @retval 无
+  */
+static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
+{
+	FIL hFile ;
+	FRESULT fres;
+	
+	enum IMAGE_TYPE ImageType = GIF;
+	IMAGE_FUN ImageFun;
+	
+  int XSize, YSize, XPos, YPos,XSizeWin,YSizeWin;
+
+	/* 立即重绘窗口，否则图片会在窗口重绘时被刷掉 */
+	WM_PaintWindowAndDescs(hParent);
+
+	//选择其窗口用于绘制操作
+	WM_SelectWindow(hParent);
+	
+	XSizeWin = WM_GetWindowSizeX(hParent);
+	YSizeWin = WM_GetWindowSizeY(hParent);
+	
+	GUI_ClearRect(0, 0,XSizeWin, YSizeWin);	
+	
+	if(strstr(file_name,".bmp")||strstr(file_name,".BMP"))
+	{
+	
+				ImageFun.GetXSizeEx 	= GUI_BMP_GetXSizeEx;
+				ImageFun.GetYSizeEx		= GUI_BMP_GetYSizeEx;
+				ImageFun.DrawEx     	= GUI_BMP_DrawEx;
+				ImageFun.DrawScaledEx = GUI_BMP_DrawScaledEx;
+				ImageFun.GetDataEx		= _GetData;
+		
+	}
+	else if(strstr(file_name,".jpg")||strstr(file_name,".JPG"))
+	{
+		
+				ImageFun.GetXSizeEx 	= GUI_JPEG_GetXSizeEx;
+				ImageFun.GetYSizeEx		= GUI_JPEG_GetYSizeEx;
+				ImageFun.DrawEx     	= GUI_JPEG_DrawEx;
+				ImageFun.DrawScaledEx = GUI_JPEG_DrawScaledEx;
+				ImageFun.GetDataEx		= _GetData;
+		
+	}
+	else if(strstr(file_name,".gif")||strstr(file_name,".GIF"))
+	{
+				ImageFun.GetXSizeEx 	= GUI_GIF_GetXSizeEx;
+				ImageFun.GetYSizeEx		= GUI_GIF_GetYSizeEx;
+				ImageFun.DrawEx     	= GUI_GIF_ActiveDrawEx;
+				ImageFun.DrawScaledEx = GUI_GIF_ActiveDrawScaledEx;
+				ImageFun.GetDataEx		= _GetData;
+	
+	}
+	else if(strstr(file_name,".png")||strstr(file_name,".PNG"))
+	{
+			
+				ImageFun.GetXSizeEx 	= GUI_PNG_GetXSizeEx;
+				ImageFun.GetYSizeEx		= GUI_PNG_GetYSizeEx;
+				ImageFun.DrawEx     	= GUI_PNG_DrawEx;
+				ImageFun.DrawScaledEx = GUI_PNG_DrawScaledEx;								//PNG没有scaled画法，
+				ImageFun.GetDataEx		= _GetPNGData;
+	}
+	else 
+		return; //不支持的格式，跳出函数	
+	
+	fres = f_open(&hFile,file_name,  FA_READ|FA_OPEN_EXISTING| FA_OPEN_ALWAYS );
+	DEBUG("\r\n open extsting fres = %d",fres); 	
+	
+	XSize = ImageFun.GetXSizeEx(ImageFun.GetDataEx, &hFile);
+  YSize = ImageFun.GetYSizeEx(ImageFun.GetDataEx, &hFile);
+	
+	DEBUG("\r\nXSize = %d ,YSize= %d ",XSize,YSize); 	
+
+#if DRAW_SCALE		//按照比例缩放图片，使图片完整地在屏幕显示
+	if((XSize > XSizeWin) || (YSize > YSizeWin))	
+	{		
+		/* 根据窗口按比例缩放图片 */
+		if(XSize/XSizeWin > YSize/YSizeWin)
+		{
+			/* 计算图片位置，使图片居中 */
+			YPos = (YSizeWin - YSize*XSizeWin/XSize )/ 2;
+			
+			/* 按比例显示图片 */
+			//while (WM_IsWindow(hParent)) 
+			{
+				ImageFun.DrawScaledEx(ImageFun.GetDataEx,&hFile,0,YPos,XSizeWin,XSize);
+				GUI_Delay(10);	
+				}	
+			}
+		else
+		{
+			
+			/* 计算图片位置，使图片居中 */
+			XPos = (XSizeWin - XSize*YSizeWin/YSize )/ 2;
+			
+			/* 按比例显示图片 */
+			//while (WM_IsWindow(hParent)) 
+			{
+				ImageFun.DrawScaledEx(ImageFun.GetDataEx,&hFile,XPos,0,YSizeWin,YSize);	
+				GUI_Delay(10);
+			}		
+		}			
+	}
+	else
+	{
+		/* 计算图片位置，使图片居中 */
+		XPos = (XSize > XSizeWin) ?  0 : (XSizeWin - XSize )/ 2;
+		YPos = (YSize > YSizeWin) ?  0 : (YSizeWin - YSize )/ 2;
+		
+		/* 以原比例显示图片*/
+		//while (WM_IsWindow(hParent) ) 
+		{
+			ImageFun.DrawEx(ImageFun.GetDataEx, &hFile, XPos, YPos);
+			GUI_Delay(10);
+		}			
+	}
+	
+#else
+	
+			/* 计算图片位置，使图片居中 */
+		XPos = (XSize > XSizeWin) ?  0 : (XSizeWin - XSize )/ 2;
+		YPos = (YSize > YSizeWin) ?  0 : (YSizeWin - YSize )/ 2;
+		
+		/* 以原比例显示图片*/
+		//直接显示到客户窗口
+		//while (WM_IsWindow(hParent)) 
+		{		
+			ImageFun.DrawEx(ImageFun.GetDataEx, &hFile, XPos, YPos); 
+			GUI_Delay(10);	
+		}			
+
+#endif	
+	
+  f_close(&hFile);
+	
+}
+
+
+/**
+  * @brief  ImageReader_FrameWin 使用framewin显示图片
+  * @param  file_name 图片文件名
+	*		
+  * @retval 无
+  */
+void ImageReader_FrameWin( char * file_name) {
+	WM_HWIN hFrame;
+	WM_HWIN hFrameC;
+	
+	hFrame = FRAMEWIN_CreateEx(	0,
+															0,
+															WinPara.xSizeWin,
+															WinPara.ySizeWin,
+															WinPara.hWinMain,
+															WM_CF_SHOW,
+															FRAMEWIN_CF_ACTIVE/*|FRAMEWIN_CF_MOVEABLE*/,
+															GUI_ID_FRAMEWIN2,
+															"Image Reader",
+															0);
+	
+		/* 创建窗口按钮 */
+	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+//	FRAMEWIN_AddMaxButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 1);
+//	FRAMEWIN_AddMinButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 2);
+
+
+	/* 把app句柄插入链表 */
+	App_Insert(hFrame);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	
+	//	TBD 使用回调函数会出现无法移动框架窗口的情况
+	_pcbOldImageWin = WM_SetCallback(hFrame, _cbImageWin );	//获取旧的回调函数指针
+
+	
+	FRAMEWIN_SetText(hFrame,file_name);
+	
+	/* 获取框架窗口用户区的句柄 */
+	hFrameC = WM_GetClientWindow(hFrame);
+
+	
+	/* 在客户窗口显示图片 */
+	ImageReader_Raw(file_name,hFrameC);
+
+}
+
+
+
+
+/*BMPReader JPEGReader GIFReader PNGReader这些函数已经不使用了，
+*	但可以作为学习教程的示例，
+*	因为每种格式都是独立的，
+*	没有使用函数指针，相对简单，
+*/
+#if 0 
 /**
   * @brief  BMPReader显示sd卡上的bmp图片
   * @param  
@@ -347,8 +638,6 @@ void BMPReader( char * file_name) {
 	
 
 }
-
-
 
 
 /**
@@ -710,8 +999,8 @@ void PNGReader( char * file_name) {
 	
   f_open(&hFile,file_name,  FA_READ|FA_OPEN_EXISTING | FA_OPEN_ALWAYS);
 	
-  XSize = GUI_PNG_GetXSizeEx(_GetPngData, &hFile);
-  YSize = GUI_PNG_GetYSizeEx(_GetPngData, &hFile);
+  XSize = GUI_PNG_GetXSizeEx(_GetPNGData, &hFile);
+  YSize = GUI_PNG_GetYSizeEx(_GetPNGData, &hFile);
 
 	
 		/* 计算图片位置，使图片居中 */
@@ -722,7 +1011,7 @@ void PNGReader( char * file_name) {
 		
 		//直接显示到客户窗口
 		
-		GUI_PNG_DrawEx(_GetPngData, &hFile, XPos, YPos);
+		GUI_PNG_DrawEx(_GetPNGData, &hFile, XPos, YPos);
 		GUI_Delay(10);
 	#else		
 		//使用Image控件显示
@@ -736,6 +1025,9 @@ void PNGReader( char * file_name) {
 }
 
 
+#endif
+
+
 
 /**
   * @brief  _cbImageAPPWin,图片APP回调函数
@@ -747,6 +1039,8 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 	WM_HWIN   hWin;
 	WM_HWIN		hButton;
 	WM_HWIN 	hImage;
+	WM_HWIN 	hText ;
+
 
 	
 	int        NCode;
@@ -763,23 +1057,22 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 	{
 		case WM_CREATE:	
 			/* 创建按键 */
-			hButton = BUTTON_CreateEx(75,WinPara.ySizeWin-20,40, 20, 
-																		pMsg->hWin, WM_CF_SHOW,0, GUI_ID_BUTTON0);
+			hButton = BUTTON_CreateEx(WinPara.xSizeWin-40,WinPara.ySizeWin-20,20, 20, 
+																		pMsg->hWin, WM_CF_SHOW|WM_CF_STAYONTOP,0, GUI_ID_BUTTON0);
 		
 			BUTTON_SetText(hButton, "<");
 		
 		
-			hButton = BUTTON_CreateEx(125,WinPara.ySizeWin-20,40, 20, 
-																		pMsg->hWin, WM_CF_SHOW,0, GUI_ID_BUTTON1);
+			hButton = BUTTON_CreateEx(WinPara.xSizeWin-20,WinPara.ySizeWin-20,20, 20, 
+																		pMsg->hWin, WM_CF_SHOW|WM_CF_STAYONTOP,0, GUI_ID_BUTTON1);
 		
 			BUTTON_SetText(hButton, ">");
 		
-//			/* 创建图片阅读器 */
-//			hImage = IMAGE_CreateEx(0,0,XSizeWin,YSizeWin,hFrameC,WM_CF_SHOW,0,GUI_ID_IMAGE0);
-//			IMAGE_SetPNGEx(hImage,_GetPngData, &hFile);		
-
-		
-			
+			/* 文件路径 */
+			hText = TEXT_CreateEx(0,WinPara.ySizeWin-20,200,20,hWin,WM_CF_SHOW|WM_CF_HASTRANS,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,NULL);
+	
+			TEXT_SetFont(hText,&GUI_Font16_ASCII);
+			TEXT_SetTextColor(hText,GUI_WHITE);			
 		
 			break;			
 		
@@ -787,20 +1080,24 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 				Id    = WM_GetId(pMsg->hWinSrc);      // 控件的ID
 				NCode = pMsg->Data.v;                 // 通知代码
 			 
-			 if(NCode == WM_NOTIFICATION_RELEASED){
+			 if(NCode == WM_NOTIFICATION_RELEASED)
+				 {
+				 
 					 if(Id == GUI_ID_BUTTON0)
 					 {					 
 						 if(ImageIndex != 0)
-						{							
-							 Image_Display(--ImageIndex);
+						{					
+							
+							 Image_Display(--ImageIndex,hWin);
 						 }
 						 					
 					 } 
 					 else if(Id == GUI_ID_BUTTON1)
-					 {
+					 {						 
 							if(ImageIndex<ImageNum )
 							{
-								Image_Display(++ImageIndex);
+								
+								Image_Display(++ImageIndex,hWin);
 							}
 						}
 						 
@@ -857,8 +1154,6 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile  )
     int i; 
     char *fn; 
 	
-		TREEVIEW_ITEM_Handle hItem;
-
 	
 #if _USE_LFN 
     static char lfn[_MAX_LFN * (_DF1S ? 2 : 1) + 1]; 	//长文件名支持
@@ -901,10 +1196,13 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile  )
 									{
 										sprintf(file_name, "%s/%s", path,fn); 	
 										//存储文件名到filelist(含路径)										
-										res = f_lseek (hFile, hItem*FILE_NAME_LEN);  
+										res = f_lseek (hFile, ImageNum*FILE_NAME_LEN);  
 										res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
 									
-										ImageNum++;				
+										ImageNum++;	
+
+										DEBUG(" imagenum =%d  \r\n", ImageNum);								//输出文件名	
+										
 										}		
 
 								}							
@@ -959,8 +1257,9 @@ static void Image_scanf(char* path,char* record_file)
   * @param  none
   * @retval none
   */
-static void Image_Display(int sel_num)
+static void Image_Display(int sel_num ,WM_HWIN hParent)
 {
+		WM_HWIN hText;
 	
 		char* file_name;
 		FIL hFile;
@@ -974,32 +1273,20 @@ static void Image_Display(int sel_num)
 		fres = f_open (&hFile, IMAGE_LIST_PATH, FA_READ ); 		//打开创建索引文件
 		fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				//根据索引值查找将要打开文件的路径
 		fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
-		fres = f_close (&hFile);
+		fres = f_close (&hFile);	
+		
+		/* 显示图片路径 */
+		hText = WM_GetDialogItem(hParent,GUI_ID_TEXT0);	
+		TEXT_SetText(hText,file_name);
+
+		DEBUG("\r\n filename = %s\r\n",file_name);
 	
-		 if(strstr(file_name,".bmp")||strstr(file_name,".BMP"))
-		{
-			BMPReader(file_name);
-		}
-		else if(strstr(file_name,".jpg")||strstr(file_name,".JPG"))
-		{
-			JPEGReader(file_name);
-		}
-		else if(strstr(file_name,".png")||strstr(file_name,".PNG"))
-		{
-			PNGReader(file_name);
-		}
-		else if(strstr(file_name,".gif")||strstr(file_name,".GIF"))
-		{
-			GIFReader(file_name);
-		}
-	
-	
+
+		/* 显示图片到窗口 */
+		ImageReader_Raw(file_name,hParent);	
 	
 		free(file_name);								//释放malloc空间		
 		file_name = NULL;
-				
-
-
 
 }
 
@@ -1017,7 +1304,7 @@ void WFGUI_ImageReader(void)
 	
 	WM_HWIN hImage;	
 	
-	/* 创建短信窗口 */
+	/* 创建图片浏览器窗口 */
 	hImage = WM_CreateWindowAsChild(0,
 																	0,
 																	WinPara.xSizeWin,
@@ -1029,13 +1316,15 @@ void WFGUI_ImageReader(void)
 	
 		/* 把app句柄插入链表 */
 	App_Insert(hImage);
-	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+
 	/* 扫描图片文件 */
 	Image_scanf("0:",IMAGE_LIST_PATH);
 	
+	GUI_Delay(10);	
+
 	/* 显示第一幅图像 */
-	Image_Display(0);
+	Image_Display(0,hImage);
 
 
 }

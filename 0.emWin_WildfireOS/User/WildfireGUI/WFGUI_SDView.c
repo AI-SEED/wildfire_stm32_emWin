@@ -11,8 +11,8 @@
 #include "WFGUI_ImageReader.h"
 
 
-static FRESULT scan_files (char* path,char*file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode) ;
-static void OpenFileProcess(int sel_num);
+static FRESULT scan_files (char* path,char*file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum) ;
+static void OpenFileProcess(int sel_num,char *record_file);
 
 
 
@@ -114,6 +114,7 @@ static void _cbSDViewWin(WM_MESSAGE * pMsg)
 	
 }
 
+
 /**
   * @brief  _cbSDViewWinC framewin用户窗口的回调函数
 	*					
@@ -141,6 +142,7 @@ static void _cbSDViewWinC(WM_MESSAGE * pMsg)
 				
 				if(ItemInfo.IsNode == 0)//叶子
 				{
+					char *record_file;
 					DEBUG("\r\n leaf num =%ld",hNode);					
 
 					/* 官方手册说切勿在回调函数中调用阻塞对话框，但这里调用了也没错误，就先这样用吧 */
@@ -150,7 +152,9 @@ static void _cbSDViewWinC(WM_MESSAGE * pMsg)
 //					{
 //									//open file
 //							DEBUG("\r\n open file");
-							OpenFileProcess(hNode);
+							/* 获取record_file 文件名*/
+							FRAMEWIN_GetUserData( WM_GetParent(pMsg->hWin),&record_file,sizeof(char *));
+							OpenFileProcess(hNode,record_file);
 //						}
 						
 					//设置选定为该叶子的父结点，防止误触发
@@ -180,7 +184,7 @@ static void _cbSDViewWinC(WM_MESSAGE * pMsg)
   * @param  none
   * @retval none
   */
-static void OpenFileProcess(int sel_num)
+static void OpenFileProcess(int sel_num,char* record_file)
 {
 	char* file_name;
 	char* read_buffer; 
@@ -200,7 +204,7 @@ static void OpenFileProcess(int sel_num)
 		
 			file_name 	= (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 			
-			fres = f_open (&hFile, FILE_LIST_PATH, FA_READ ); 		//打开创建索引文件
+			fres = f_open (&hFile, record_file, FA_READ ); 		//打开创建索引文件
 			fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				//根据索引值查找将要打开文件的路径
 			fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
 			fres = f_close (&hFile);
@@ -242,11 +246,12 @@ static void OpenFileProcess(int sel_num)
 
 
 /**
-  * @brief  scan_files 递归扫描sd卡内的歌曲文件
-  * @param  path:初始扫描路径  hTree 目录树 hNode 目录结点
+  * @brief  scan_files 递归扫描sd卡内的文件
+  * @param  path:初始扫描路径 file_name：指向用来存储文件名的一段空间 hFile:用于记录文件路径的文件指针 hTree 目录树 hNode 目录结点
+	*					hTree == NULL &&	hNode == NULL 的话，不创建目录树			
   * @retval result:文件系统的返回值
   */
-static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode) 
+static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum) 
 { 
 		
     FRESULT res; 		//部分在递归过程被修改的变量，不用全局变量	
@@ -282,28 +287,76 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
             if (*fn == '.') continue; 											//点表示当前目录，跳过			
             if (fno.fattrib & AM_DIR) 
 						{ 																							//目录，递归读取
-								hItem = TREEVIEW_ITEM_Create(TREEVIEW_ITEM_TYPE_NODE,fn,0);						//目录，创建结点
-								TREEVIEW_AttachItem(hTree,hItem,hNode,TREEVIEW_INSERT_FIRST_CHILD);		//把结点加入到目录树中
 							
+							  if(hTree != NULL &&	hNode != NULL)
+								{
+									hItem = TREEVIEW_ITEM_Create(TREEVIEW_ITEM_TYPE_NODE,fn,0);						//目录，创建结点
+									TREEVIEW_AttachItem(hTree,hItem,hNode,TREEVIEW_INSERT_FIRST_CHILD);		//把结点加入到目录树中
+								}
+								
 							  sprintf(&path[i], "/%s", fn); 							//合成完整目录名
-                res = scan_files(path,file_name,hFile,hTree,hItem);					//递归遍历 
+                res = scan_files(path,file_name,hFile,hTree,hItem,fileType,fileNum);					//递归遍历 
                 if (res != FR_OK) 
 									break; 																		//打开失败，跳出循环
                 path[i] = 0; 
             } 
-						else 
+						else 																																	//是文件
 						{ 
 							DEBUG("%s/%s hItem = %d  \r\n", path, fn,(int)hItem);								//输出文件名	
-							hItem = TREEVIEW_ITEM_Create(TREEVIEW_ITEM_TYPE_LEAF,fn,0);						//文件，创建树叶
-							TREEVIEW_AttachItem(hTree,hItem,hNode,TREEVIEW_INSERT_FIRST_CHILD);		//把树叶添加到目录树
 							
-							if (strlen(path)+strlen(fn)<FILE_NAME_LEN)
+							if(fileType == TEXTFILE )
+							{
+								if(!(strstr(fn,".txt")||strstr(fn,".TXT")
+											||strstr(fn,".c")||strstr(fn,".c")
+												||strstr(fn,".cpp")||strstr(fn,".CPP")
+														||strstr(fn,".h")||strstr(fn,".h")))						//判断如果不是txt文件，跳出本函数
+															{
+																	return res;
+																}
+								
+							}
+							else if(fileType ==IMAGEFILE)
+							{
+								if(!(strstr(fn,".bmp")||strstr(fn,".BMP")||
+												strstr(fn,".jpg")||strstr(fn,".JPG")||
+													strstr(fn,".gif")||strstr(fn,".GIF")||
+														strstr(fn,".png")||strstr(fn,".PNG")))														//判断如果不是Image文件，跳出本函数
+														{
+															return res;																					
+														}
+							
+							}
+							
+							
+							/* 是符合要求的文件 */
+							
+							/* 根据要求是否创建目录树 */
+							if(hTree != NULL &&	hNode != NULL)																			//创建目录树
+							{
+								hItem = TREEVIEW_ITEM_Create(TREEVIEW_ITEM_TYPE_LEAF,fn,0);						//文件，创建树叶
+								TREEVIEW_AttachItem(hTree,hItem,hNode,TREEVIEW_INSERT_FIRST_CHILD);		//把树叶添加到目录树
+						
+							
+								if (strlen(path)+strlen(fn)<FILE_NAME_LEN)
+								{
+									sprintf(file_name, "%s/%s", path,fn); 	
+									//存储文件名到filelist(含路径)										
+									res = f_lseek (hFile, hItem*FILE_NAME_LEN);  
+									res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
+								}			
+							}
+							else																																		//不创建目录树
 							{
 								sprintf(file_name, "%s/%s", path,fn); 	
 								//存储文件名到filelist(含路径)										
-								res = f_lseek (hFile, hItem*FILE_NAME_LEN);  
+								res = f_lseek (hFile, fileNum*FILE_NAME_LEN);  
 								res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
-							}								
+							
+								fileNum++;	
+
+								DEBUG(" fileNum =%d  \r\n", fileNum);								//输出文件名	
+
+							}
            }//else
         } //for
     } 
@@ -313,12 +366,12 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 
 
 /**
-  * @brief  Fill_TreeView处理非递归过程，然后调用递归函数scan_files扫描目录
+  * @brief  Fill_FileList处理非递归过程，然后调用递归函数scan_files扫描目录
 	*					
   * @param  path:初始扫描路径
   * @retval none
   */
-static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode)
+void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum)
 {
 	char * p_path;									//目录名 指针
 	char * file_name;								//用于存储的目录文件名，
@@ -335,7 +388,7 @@ static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_I
 
 	strcpy(p_path,path);						//复制目录名到指针
 	
-	fres = scan_files(p_path,file_name,&hFile,hTree,hNode);			//递归扫描歌曲文件		
+	fres = scan_files(p_path,file_name,&hFile,hTree,hNode,fileType,fileNum);			//递归扫描文件		
 	
 	fres = f_close (&hFile);					//关闭索引文件		
 
@@ -348,14 +401,13 @@ static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_I
 	
 
 }
-
 /**
-  * @brief  SDView_MainTask处理非递归过程，然后调用递归函数scan_files扫描目录
+  * @brief  Fill_TreeView创建目录树
 	*					
-  * @param  path:初始扫描路径
+  * @param  fileType:文件类型
   * @retval none
   */
- void SDView_MainTask(void )
+ void Fill_TreeView(FILE_TYPE fileType ,char* record_file)
 { 
 
 	WM_HWIN hFrame;									//sdview窗口句柄
@@ -363,6 +415,7 @@ static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_I
 	
 	WM_HWIN hTree;	  							//目录树句柄
   TREEVIEW_ITEM_Handle hNode;			//结点句柄
+	
 
   //
   // 输出系统信息
@@ -373,7 +426,7 @@ static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_I
 //  GUI_DispStringHCenterAt("scanning sd Card...", WinPara.xSizeWin >> 1, WinPara.ySizeWin / 3);
   //GUI_X_Delay(100);
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN0,"SD View",0);
+	hFrame = FRAMEWIN_CreateUser(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN0,"SD View",0,50);
 
 	FRAMEWIN_SetResizeable(hFrame,1);
 	/* 创建窗口按钮 */
@@ -407,10 +460,27 @@ static void Fill_TreeView(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_I
   hNode = TREEVIEW_InsertItem(hTree, TREEVIEW_ITEM_TYPE_NODE, 0, 0, "sd Card");
 	
 	/* 扫描sd卡，填充目录树*/
-	Fill_TreeView("0:",FILE_LIST_PATH,hTree,hNode);
+	Fill_FileList("0:",record_file,hTree,hNode,fileType,NULL);
 	
+	/* 设置recordfile，在回调函数中使用到 */
+	FRAMEWIN_SetUserData(hFrame,&record_file ,sizeof(char*));	
 
 }
+
+/**
+  * @brief  WFGUI_SDView SD文件浏览器主函数
+	*					
+  * @param  fileType:文件类型
+  * @retval none
+  */
+void WFGUI_SDView(void )
+{
+
+	Fill_TreeView(ALLFILE,FILE_LIST_PATH);
+	
+}
+
+
 	
 
 

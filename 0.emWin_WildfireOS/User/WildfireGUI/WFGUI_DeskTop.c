@@ -49,9 +49,11 @@
 #include "WFGUI_Camera.h"
 #include "WFGUI_Snapshot.h"
 #include "WFGUI_ImageReader.h"
+#include "WFGUI_Temperature.h"
+#include "WFGUI_TextReader.h"
 
 #include "WFGUI_Keypad.h"
-#include "WFGUI_Temperature.h"
+
 
 #define  GUI_DEVELOP
 
@@ -92,10 +94,10 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 //  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
 //		{&bmWF_Message, "Message"   , "Read or write message"},
 //  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
-//  {&bmWF_Note,    "Note"    , "Write a note"},
+  {&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
 //  {&bmWF_Camera,"Camera", "Take a phone"},
-	{&bmWF_Picture,  "Picture" , "Picture viewer"},
+//	{&bmWF_Picture,  "Picture" , "Picture viewer"},
 //	{&bmWF_Map,  "Map" , "Map"},
 //  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
 
@@ -672,7 +674,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 											
 													ShowTips(pMsg->hWin);					//提示让用户等待
 
-													SDView_MainTask();	
+													WFGUI_SDView();	
 												break;
 											
 											case 1:
@@ -726,6 +728,24 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 												WFGUI_Temperature();
 												
 											break;
+										
+										case 6:
+												GUI_Delay(500);										
+
+												ShowTips(pMsg->hWin);					//提示让用户等待
+											
+												WFGUI_ImageReader();
+											
+										break;
+									
+										case 7:
+												GUI_Delay(500);										
+
+												ShowTips(pMsg->hWin);					//提示让用户等待
+											
+												WFGUI_TextReader();
+											
+										break;
 											
 											
 												
@@ -748,7 +768,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 
 									ShowTips(pMsg->hWin);					//提示让用户等待
 
-									WFGUI_ImageReader();				
+									WFGUI_TextReader(); 
 
 								break;
 #endif											
@@ -959,7 +979,7 @@ static void CreateFont(SD_FONT *ExFont)
 	FRESULT res;
 
 		//0:/WF_OS/FONT/HuaWen17.xbf
-  res = f_open(&ExFont->hFontFile,"0:/WF_OS/FONT/weiruanex2.xbf",FA_READ|FA_OPEN_EXISTING);
+  res = f_open(&ExFont->hFontFile,XBF_FONT_PATH,FA_READ|FA_OPEN_EXISTING);
 	if (res == FR_OK) {
 		
 	 /* 成功打开字库文件 */

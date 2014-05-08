@@ -44,9 +44,13 @@
 #define MUSIC_NAME_LEN 	24			//LCD显示的文件名的最大长度
 #define _DF1S	0x81
 
-#define FILE_LIST_PATH 			"0:WF_OS/filelist.txt"					//文件记录列表文件的目录
-#define IMAGE_LIST_PATH 		"0:WF_OS/imagelist.txt"					//图片文件记录列表文件的目录
 
+#define FILE_LIST_PATH 			"0:WF_OS/Record/filelist.txt"					//文件记录列表文件的目录
+#define IMAGE_LIST_PATH 		"0:WF_OS/Record/imagelist.txt"					//图片文件记录列表文件的目录
+#define TEXT_LIST_PATH 			"0:WF_OS/Record/textlist.txt"					//图片文件记录列表文件的目录
+
+
+#define XBF_FONT_PATH				"0:/WF_OS/FONT/weiruanex2.xbf"				//外部字体文件的存储路径
 
 
 typedef struct WIN_PARA{			//窗口使用到的用户定义参数，方便在回调函数中使用
@@ -82,7 +86,7 @@ typedef struct
 
 }SD_FONT;
 
-enum IMAGE_TYPE {BMP,JPEG,GIF,PNG};
+typedef enum FILE_TYPE {ALLFILE,IMAGEFILE,TEXTFILE} FILE_TYPE;					//文件类型
 
 
 extern WIN_PARA WinPara;			//用户使用的窗口额外数据

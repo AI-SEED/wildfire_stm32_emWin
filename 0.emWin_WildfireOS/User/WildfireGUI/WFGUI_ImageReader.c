@@ -325,7 +325,6 @@ static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
 	FIL hFile ;
 	FRESULT fres;
 	
-	enum IMAGE_TYPE ImageType = GIF;
 	IMAGE_FUN ImageFun;
 	
   int XSize, YSize, XPos, YPos,XSizeWin,YSizeWin;
@@ -664,7 +663,7 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile  )
 							if(strstr(fn,".bmp")||strstr(fn,".BMP")||
 										strstr(fn,".jpg")||strstr(fn,".JPG")||
 											strstr(fn,".gif")||strstr(fn,".GIF")||
-												strstr(fn,".png")||strstr(fn,".PNG"))//判断是否mp3或wav文件
+												strstr(fn,".png")||strstr(fn,".PNG"))//判断是否可读的Image文件
 								{
 									DEBUG("%s/%s  \r\n", path, fn);								//输出文件名	
 									

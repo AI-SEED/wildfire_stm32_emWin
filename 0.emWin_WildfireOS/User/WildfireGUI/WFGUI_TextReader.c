@@ -6,10 +6,10 @@
 
 #include "bsp_usart1.h"
 #include "WFGUI_Common.h"
+#include "WFGUI_SDView.h"
 #include "WFGUI_TextReader.h"
 
 static WM_CALLBACK*     _pcbOldSDViewWin = NULL;
-
 
 
 /**
@@ -127,6 +127,17 @@ void TextReader(char *file_name )
 
 
 
+/**
+  * @brief  WFGUI_TextReader,WFGUI textReader Ö÷º¯Êý
+  * @param  none
+  * @retval none
+  */
+void WFGUI_TextReader(void)
+{
+
+	Fill_TreeView(TEXTFILE,TEXT_LIST_PATH); 
+
+}
 
 
 

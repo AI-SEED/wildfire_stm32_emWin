@@ -8,6 +8,7 @@
 #include "bsp_usart1.h"
 #include "WFGUI_Common.h"
 #include "WFGUI_ImageReader.h"
+#include "WFGUI_SDView.h"
 
 
 
@@ -27,7 +28,7 @@ __align(4) char _acBuffer[1024*4] ;
 
 
 static WM_CALLBACK*     _pcbOldImageWin = NULL;
-static __IO int 				ImageNum				=	0;
+static  int 						ImageNum				=	0;
 
 static void Image_Display(int sel_num,WM_HWIN hParent);
 
@@ -611,121 +612,6 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 
 
 
-
-
-/**
-  * @brief  scan_files 递归扫描sd卡内的歌曲文件
-  * @param  path:初始扫描路径  hTree 目录树 hNode 目录结点
-  * @retval result:文件系统的返回值
-  */
-static FRESULT scan_files (char* path,char* file_name,FIL *hFile  ) 
-{ 
-		
-    FRESULT res; 		//部分在递归过程被修改的变量，不用全局变量	
-    FILINFO fno; 
-		unsigned int rw_num;			//已读或已写的字节数
-
-    DIR dir; 
-    int i; 
-    char *fn; 
-	
-	
-#if _USE_LFN 
-    static char lfn[_MAX_LFN * (_DF1S ? 2 : 1) + 1]; 	//长文件名支持
-    fno.lfname = lfn; 
-    fno.lfsize = sizeof(lfn); 
-#endif 
-
-    res = f_opendir(&dir, path); //打开目录
-    if (res == FR_OK) 
-			{ 
-        i = strlen(path); 
-        for (;;) 
-				{ 
-            res = f_readdir(&dir, &fno); 										//读取目录下的内容
-            if (res != FR_OK || fno.fname[0] == 0) break; 	//为空时表示所有项目读取完毕，跳出
-#if _USE_LFN 
-            fn = *fno.lfname ? fno.lfname : fno.fname; 
-#else 
-            fn = fno.fname; 
-#endif 
-            if (*fn == '.') continue; 											//点表示当前目录，跳过			
-            if (fno.fattrib & AM_DIR) 
-						{ 																							//目录，递归读取		
-							  sprintf(&path[i], "/%s", fn); 							//合成完整目录名
-                res = scan_files(path,file_name,hFile);					//递归遍历 
-                if (res != FR_OK) 
-									break; 																		//打开失败，跳出循环
-                path[i] = 0; 
-            } 
-						else 
-						{ 
-							if(strstr(fn,".bmp")||strstr(fn,".BMP")||
-										strstr(fn,".jpg")||strstr(fn,".JPG")||
-											strstr(fn,".gif")||strstr(fn,".GIF")||
-												strstr(fn,".png")||strstr(fn,".PNG"))//判断是否可读的Image文件
-								{
-									DEBUG("%s/%s  \r\n", path, fn);								//输出文件名	
-									
-									if (strlen(path)+strlen(fn)<FILE_NAME_LEN)
-									{
-										sprintf(file_name, "%s/%s", path,fn); 	
-										//存储文件名到filelist(含路径)										
-										res = f_lseek (hFile, ImageNum*FILE_NAME_LEN);  
-										res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
-									
-										ImageNum++;	
-
-										DEBUG(" imagenum =%d  \r\n", ImageNum);								//输出文件名	
-										
-										}		
-
-								}							
-           }//else
-        } //for
-    } 
-
-    return res; 
-} 
-
-
-/**
-  * @brief  Fill_TreeView处理非递归过程，然后调用递归函数scan_files扫描目录
-	*					
-  * @param  path:初始扫描路径
-  * @retval none
-  */
-static void Image_scanf(char* path,char* record_file)
-{
-	char * p_path;									//目录名 指针
-	char * file_name;								//用于存储的目录文件名，
-	FIL		hFile;										//文件句柄	
-	FRESULT fres;										//返回结果
-	
-	
-	fres = f_unlink(record_file);//删除旧的filelist		// TBD 增加自建目录
-
-	p_path = (char * ) malloc(PATH_LEN* sizeof(char));  //为存储目录名的指针分配空间
-	file_name = (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
-	
-	fres = f_open (&hFile, record_file, FA_READ|FA_WRITE|FA_CREATE_ALWAYS ); //打开创建索引文件
-
-	strcpy(p_path,path);						//复制目录名到指针
-	
-	fres = scan_files(p_path,file_name,&hFile);			//递归扫描歌曲文件		
-	
-	fres = f_close (&hFile);					//关闭索引文件		
-
-	free(p_path);										//释放malloc空间		
-	p_path = NULL;
-	
-	free(file_name);								//释放malloc空间		
-	file_name = NULL;
-
-	
-
-}
-
 /**
   * @brief  Image_Display 显示图片
 	*					
@@ -794,8 +680,8 @@ void WFGUI_ImageReader(void)
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 
 	/* 扫描图片文件 */
-	Image_scanf("0:",IMAGE_LIST_PATH);
-	
+	//Image_scanf("0:",IMAGE_LIST_PATH);
+	Fill_FileList("0:",IMAGE_LIST_PATH,NULL,NULL,IMAGEFILE,&ImageNum);
 	GUI_Delay(10);	
 
 	/* 显示第一幅图像 */

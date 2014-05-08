@@ -360,10 +360,10 @@ static void _cbTEMPWin(WM_MESSAGE * pMsg) {
 		
 	case WM_DELETE:
 		/* 删除app句柄链表里的记录 */	
-		App_Delete(pMsg->hWin);
-	
-		/* 发送消息通知ctrl窗口*/		
-		WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+//		App_Delete(pMsg->hWin);
+//	
+//		/* 发送消息通知ctrl窗口*/		
+//		WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 	
 		break;		
 		

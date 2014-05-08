@@ -11,7 +11,7 @@
 #include "WFGUI_ImageReader.h"
 
 
-static FRESULT scan_files (char* path,char*file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum) ;
+static FRESULT scan_files (char* path,char*file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int *fileNum) ;
 static void OpenFileProcess(int sel_num,char *record_file);
 
 
@@ -251,7 +251,7 @@ static void OpenFileProcess(int sel_num,char* record_file)
 	*					hTree == NULL &&	hNode == NULL 的话，不创建目录树			
   * @retval result:文件系统的返回值
   */
-static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum) 
+static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int *fileNum) 
 { 
 		
     FRESULT res; 		//部分在递归过程被修改的变量，不用全局变量	
@@ -302,7 +302,7 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
             } 
 						else 																																	//是文件
 						{ 
-							DEBUG("%s/%s hItem = %d  \r\n", path, fn,(int)hItem);								//输出文件名	
+						//	DEBUG("%s/%s hItem = %d  \r\n", path, fn,(int)hItem);								//输出文件名	
 							
 							if(fileType == TEXTFILE )
 							{
@@ -349,12 +349,12 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 							{
 								sprintf(file_name, "%s/%s", path,fn); 	
 								//存储文件名到filelist(含路径)										
-								res = f_lseek (hFile, fileNum*FILE_NAME_LEN);  
+								res = f_lseek (hFile, (*fileNum)*FILE_NAME_LEN);  
 								res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
 							
-								fileNum++;	
+								(*fileNum)++;	
 
-								DEBUG(" fileNum =%d  \r\n", fileNum);								//输出文件名	
+								//DEBUG(" fileNum =%d  \r\n", *fileNum);								//输出文件名	
 
 							}
            }//else
@@ -371,7 +371,7 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
   * @param  path:初始扫描路径
   * @retval none
   */
-void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int fileNum)
+void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int *fileNum)
 {
 	char * p_path;									//目录名 指针
 	char * file_name;								//用于存储的目录文件名，

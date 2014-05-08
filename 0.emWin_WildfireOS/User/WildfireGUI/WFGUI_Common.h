@@ -1,6 +1,8 @@
 #ifndef __WFGUI_COMMON_H
 #define __WFGUI_COMMON_H
 
+#include "WFGUI_LinkedList.h"
+
 #include "ICONVIEW.h"
 #include "bsp_usart1.h"
 #include "bsp_date.h"
@@ -86,6 +88,14 @@ typedef struct
 
 }SD_FONT;
 
+
+typedef struct
+{
+	struct hlist_node listHead;
+	WM_HWIN hAPP;
+	
+}HANDLE_LIST;
+
 typedef enum FILE_TYPE {ALLFILE,IMAGEFILE,TEXTFILE} FILE_TYPE;					//文件类型
 
 
@@ -115,9 +125,9 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Temperature;	//温度计
 
 
 /* 公有函数 */
-extern void App_Insert(WM_HWIN NewApp);
-extern void App_Delete(WM_HWIN NewApp);
-extern WM_HWIN App_GetTopWin(void);
+extern void 			App_Insert			(WM_HWIN NewApp);
+extern WM_HWIN 		App_Delete			(WM_HWIN NewApp);
+extern WM_HWIN 		App_GetTopWin		(void);
 
 
 

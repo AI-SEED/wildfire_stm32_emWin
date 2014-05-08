@@ -79,10 +79,10 @@ static void _cbPhone(WM_MESSAGE * pMsg)
 	case WM_DELETE:
 		
 		/* 删除app句柄链表里的记录 */	
-		App_Delete(pMsg->hWin);
+	//	App_Delete(pMsg->hWin);
 	
 		/* 发送消息通知ctrl窗口*/		
-		WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+	//	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 
 	
 		break;
@@ -331,19 +331,21 @@ static void _cbPhoneKey(WM_MESSAGE * pMsg)
   */
 static void Phone_Calling(WM_HWIN Parent,char *num)
 {
-	WM_HWIN hPhone;
+	//WM_HWIN hPhone;
 	WM_HWIN hText;
 	WM_HWIN hKeypad;
 	WM_HWIN hButton;	
 	
+	HANDLE_LIST hPhone;
+	
 	char DispText[60];
 	
 	/* 创建电话窗口 */
-	hPhone = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
+	hPhone.hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
 
 	sprintf(DispText,"Calling %s",num);
 	/* 创建号码窗口 */	
-	hText	= TEXT_CreateEx(0,0,240,80,hPhone,WM_CF_SHOW,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,DispText);	
+	hText	= TEXT_CreateEx(0,0,240,80,hPhone.hAPP,WM_CF_SHOW,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,DispText);	
 	
 	/* 设置文本框背景 */
 	TEXT_SetBkColor(hText,GUI_DARKGRAY);
@@ -360,10 +362,11 @@ static void Phone_Calling(WM_HWIN Parent,char *num)
 	
 
 	/* 创建按键窗口 */
-	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCalling, 0);		
+	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone.hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCalling, 0);		
 	
 	/* 记录当前窗口 */
-	App_Insert(hPhone);
+	//App_Insert(hPhone);
+	
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 
 

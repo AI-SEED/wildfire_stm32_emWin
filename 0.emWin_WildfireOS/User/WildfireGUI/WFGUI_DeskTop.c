@@ -55,6 +55,8 @@
 #include "WFGUI_Keypad.h"
 
 
+
+
 //#define  GUI_DEVELOP
 
 
@@ -93,9 +95,9 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 static const BITMAP_ITEM _aBitmapItem[] = {
 //  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
 //  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
-//		{&bmWF_Message, "Message"   , "Read or write message"},
-//  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
-  {&bmWF_Note,    "Note"    , "Write a note"},
+//	{&bmWF_Message, "Message"   , "Read or write message"},
+  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
+//  {&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
 //  {&bmWF_Camera,"Camera", "Take a phone"},
 //	{&bmWF_Picture,  "Picture" , "Picture viewer"},
@@ -176,19 +178,22 @@ void App_Insert(WM_HWIN NewApp)
 }
 
 /**
-  * @brief  App_Delete,删除位于最上层的窗口
+  * @brief  App_Delete,删除链表里的窗口句柄
   * @param  none
   * @retval none
   */	
-void App_Delete(WM_HWIN NewApp)
+WM_HWIN App_Delete(WM_HWIN NewApp)
 {
 	char i;
+	
+	/* 遍历链表找到句柄的链表索引*/
 	for(i=0;i<GUI_COUNTOF(WinPara.hApp);i++)
 	{		
 		if(WinPara.hApp[i] == NewApp )
 			break;
 		}
 	
+	/*  */	
 	if(WinPara.hApp[i+1] != 0)
 	{
 		for(;i<GUI_COUNTOF(WinPara.hApp);i++)
@@ -197,6 +202,8 @@ void App_Delete(WM_HWIN NewApp)
 	}		
 	
 	WinPara.hApp[i] = 0;	
+	
+	return NewApp;
 	
 
 }
@@ -391,7 +398,8 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 						
 						hActive = App_GetTopWin();
 						WM_DeleteWindow(hActive);
-						App_Delete(hActive);									
+						App_Delete(hActive);	
+								
 						
 						}
 						else if(Id == GUI_ID_BUTTON1)						
@@ -769,7 +777,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 
 									ShowTips(pMsg->hWin);					//提示让用户等待
 
-									WFGUI_TextReader(); 
+									WFGUI_Phone(); 
 
 								break;
 #endif											
@@ -1030,8 +1038,9 @@ static void SetDefaultSkin(void)
 	CreateFont(&SDFont);
 	
 	/* 设置默认字体 */
-  TEXT_SetDefaultFont(&SDFont.XFont);
+	TEXT_SetDefaultFont(&SDFont.XFont);
 	
+	//TEXT_SetDefaultFont(GUI_FONT_8X16);
 	//BUTTON_SetDefaultFont(GUI_FONT_8X16);
 	
 	/* 设置framwin  */
@@ -1083,6 +1092,8 @@ static void CreatStatusWin(void)
 
 }
 
+
+
 /**
   * @brief  CreatCtrlWin，创建底部的控制栏
   * @param  none
@@ -1091,6 +1102,8 @@ static void CreatStatusWin(void)
 static void CreatCtrlWin(void)
 {
 	WM_HWIN hButtonWin;
+	
+//	static HANDLE_LIST 
 	
 	WinPara.hWinCtrl = WM_CreateWindowAsChild(
 																							0,											

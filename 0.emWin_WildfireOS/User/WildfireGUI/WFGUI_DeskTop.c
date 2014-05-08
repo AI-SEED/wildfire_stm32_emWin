@@ -55,7 +55,7 @@
 #include "WFGUI_Keypad.h"
 
 
-#define  GUI_DEVELOP
+//#define  GUI_DEVELOP
 
 
 /*********************************************************************
@@ -76,12 +76,13 @@ static const BITMAP_ITEM _aBitmapItem[] = {
   {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
   {&bmWF_Message, "Message"   , "Read or write message"},
   {&bmWF_Phone,  " Phone"  , "make a telephone call"},
-//	{&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
   {&bmWF_Camera,"Camera", "Take a phone"},
-//	{&bmWF_Picture,  "Picture" , "Picture viewer"},
+	{&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
+	{&bmWF_Picture,  "Picture" , "Picture viewer"},
+	{&bmWF_Note,    "Note"    , "Write a note"},
 //	{&bmWF_Map,  "Map" , "Map"},
-  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
+  
 };
 
 #else

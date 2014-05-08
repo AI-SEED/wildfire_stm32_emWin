@@ -35,7 +35,7 @@
 #define VIRTUAL_WIN_NUM					(2)
 
 /* 每页的图标数*/
-#define ICON_PAGE_NUM						(5)
+#define ICON_PAGE_NUM						(20)
 
 
 

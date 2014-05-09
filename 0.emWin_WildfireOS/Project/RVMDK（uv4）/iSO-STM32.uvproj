@@ -737,6 +737,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\WildfireGUI\WFGUI_Temperature.c</FilePath>
             </File>
+            <File>
+              <FileName>WFGUI_APPLinkedList.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\WildfireGUI\WFGUI_APPLinkedList.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

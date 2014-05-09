@@ -91,7 +91,7 @@ typedef struct
 
 typedef struct
 {
-	struct hlist_node listHead;
+	struct list_head listNode;
 	WM_HWIN hAPP;
 	
 }HANDLE_LIST;
@@ -128,6 +128,15 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Temperature;	//温度计
 extern void 			App_Insert			(WM_HWIN NewApp);
 extern WM_HWIN 		App_Delete			(WM_HWIN NewApp);
 extern WM_HWIN 		App_GetTopWin		(void);
+
+/* hAPP链表函数 */
+extern HANDLE_LIST* 	hAPPLinkedList_NewNode		(void);
+extern void 					hAPPLinkedList_Init				(void);
+extern void 					hAPPLinkedList_Del				(HANDLE_LIST *node);
+extern void 					hAPPLinkedList_AddTail		(HANDLE_LIST *node);
+extern HANDLE_LIST* 	hAPPLinkedList_GetAppNode	(WM_HWIN hAPP);
+
+
 
 
 

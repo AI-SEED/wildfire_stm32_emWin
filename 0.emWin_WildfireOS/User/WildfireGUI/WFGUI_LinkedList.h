@@ -26,11 +26,21 @@
  * @param member     the name of the member within the struct.
  *
  */
+#if 0
+//GCC用法，标准C不支持
+
 #define container_of(ptr, type, member) ({                      \
         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
         (type *)( (char *)__mptr - offsetof(type,member) );})
 /*@}*/
+#else
+//MDK可用，但不知道这样有没有问题
 
+#define container_of(ptr, type, member)  (                     \
+          (type *)( (char *)ptr - offsetof(type,member) ))
+
+
+#endif
 
 
 

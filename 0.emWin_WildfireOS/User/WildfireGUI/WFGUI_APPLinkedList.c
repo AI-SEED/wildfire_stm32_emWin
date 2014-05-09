@@ -1,0 +1,111 @@
+
+#include "WFGUI_Common.h"
+#include "WFGUI_LinkedList.h"
+
+/* 主要是在Linux链表操作的基础上添加了malloc分配数据 和free处理数据释放 */
+
+static  HANDLE_LIST hAppHead;				//链表头部
+
+/**
+  * @brief  hAPPLinkedlist_NewNode为创建一个新的hAPP结点，分配空间
+  * @param  none
+  * @retval 指向新结点的指针
+  */
+ HANDLE_LIST* hAPPLinkedList_NewNode(void)
+{
+	HANDLE_LIST *app = (HANDLE_LIST *)malloc(sizeof(HANDLE_LIST));
+	
+	if (app == NULL)
+	 {
+		 DEBUG("\r\n hAPP linkedList malloc error\r\n ");
+		return NULL;
+	 }
+	 
+	 return app;
+	 
+}
+
+/**
+  * @brief  hAPPLinkedlist_Init初始化hAPP链表
+  * @param  none
+  * @retval none
+  */
+ void hAPPLinkedList_Init(void)
+{
+	//HANDLE_LIST * hAppHead = WFGUI_hAPPLinkedList_NewNode();
+	
+	INIT_LIST_HEAD(&hAppHead.listNode );
+
+}
+
+/**
+  * @brief  hAPPLinkedList_Del删除链表中的结点，并释放malloc空间
+  * @param  none
+  * @retval none
+  */
+void hAPPLinkedList_Del(HANDLE_LIST *node)
+{
+	if (node == NULL)
+	 {
+		 DEBUG("\r\n hAPP linkedList free error\r\n ");
+		return ;
+	 }
+	 
+	 /* 删除在链表里的记录 */
+	 list_del(&node->listNode);
+	 
+	 /* 释放结点的malloc空间 */
+	 free(node);
+}
+
+
+/**
+  * @brief hAPPLinkedList_AddTail增加结点到链表
+  * @param  none
+  * @retval none
+  */
+void hAPPLinkedList_AddTail(HANDLE_LIST *node)
+{
+		list_add_tail(&node->listNode,&hAppHead.listNode);
+}
+
+
+/**
+  * @brief  hAPPLinkedList_GetAppNode根据APP句柄获取链表结点
+  * @param  none
+  * @retval app结点句柄，没有的话返回NULL
+  */
+HANDLE_LIST* hAPPLinkedList_GetAppNode(WM_HWIN hAPP)
+{
+	struct list_head *pos;	
+	HANDLE_LIST *node;
+	
+	list_for_each(pos,&hAppHead.listNode)
+	{
+		/* TBD 这里有个warning，不知道影响大不大*/		
+		node = list_entry(pos,HANDLE_LIST,listNode);
+		
+		/* 返回与输入app句柄相同的结点 */
+		if(node->hAPP == hAPP)
+		{
+				return node;
+		}
+		
+	}
+	
+	/* 找不到与输入app句柄相同的结点 */
+	if(pos == &hAppHead.listNode)
+		return NULL;
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+

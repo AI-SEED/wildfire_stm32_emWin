@@ -3252,7 +3252,7 @@ static void _cbKeyPad(WM_MESSAGE * pMsg) {
 *
 * Return value:
 *   0 on success, 1 on error
-//*/
+*/
 //static int _cbGetData(U32 Off, U16 NumBytes, void * pVoid, void * pBuffer) {
 //  FIL hFile;
 //  UINT  NumBytesRead;

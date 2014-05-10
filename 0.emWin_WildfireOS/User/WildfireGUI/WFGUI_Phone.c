@@ -68,6 +68,8 @@ static void _cbPhone(WM_MESSAGE * pMsg)
 	WM_HWIN hWin;
 	int xSize,ySize;
 	
+	HANDLE_LIST *appNode;
+	
 	
 	hWin = pMsg->hWin;
   switch (pMsg->MsgId) {
@@ -76,14 +78,18 @@ static void _cbPhone(WM_MESSAGE * pMsg)
 	
 		break;
 	
-	case WM_DELETE:
-		
-		/* 删除app句柄链表里的记录 */	
-	//	App_Delete(pMsg->hWin);
-	
-		/* 发送消息通知ctrl窗口*/		
-	//	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+	case WM_DELETE:		
 
+			/* 获取app句柄对应的链表结点 */
+		appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+		if(appNode != NULL)
+		{
+			/* 删除app句柄链表里的记录 */	
+			hAPPLinkedList_Del(appNode);
+		
+			/* 发送消息通知ctrl窗口*/		
+			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+		}
 	
 		break;
 	
@@ -112,6 +118,8 @@ static void _cbCalling(WM_MESSAGE * pMsg)
 {
 	WM_HWIN hWin;
 	WM_HWIN hButton;
+	
+	HANDLE_LIST *appNode;
 	
 	int xSize,ySize;
 	
@@ -145,9 +153,18 @@ static void _cbCalling(WM_MESSAGE * pMsg)
 				SIM900A_HANGOFF();
 				
 				/* 关闭窗口 */		
-				App_Delete(WM_GetParent(pMsg->hWin));
+				/* 获取app句柄对应的链表结点 */
+				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+				if(appNode != NULL)
+				{
+					/* 删除app句柄链表里的记录 */	
+					hAPPLinkedList_Del(appNode);
+						
+					/* 删除窗口 */
+					WM_DeleteWindow(WM_GetParent(pMsg->hWin));
+
+				}
 				
-				WM_DeleteWindow(WM_GetParent(pMsg->hWin));
 			
 			}
 			
@@ -372,57 +389,6 @@ static void Phone_Calling(WM_HWIN Parent,char *num)
 
 }
 
- //定义app_info链表结构
- typedef struct application_info
- {
-     uint32_t  app_id;
-     uint32_t  up_flow;
-     uint32_t  down_flow;
-     struct    list_head app_info_node;//链表节点
- }app_info;
- 
- 
- app_info* get_app_info(uint32_t app_id, uint32_t up_flow, uint32_t down_flow)
- {
-     app_info *app = (app_info*)malloc(sizeof(app_info));
-     if (app == NULL)
-     {
-//     fprintf(stderr, "Failed to malloc memory, errno:%u, reason:%s\n",
-//         errno, strerror(errno));
-     return NULL;
-     }
-     app->app_id = app_id;
-     app->up_flow = up_flow;
-     app->down_flow = down_flow;
-     return app;
- }
- static void for_each_app(const struct list_head *head)
- {
-     struct list_head *pos;
-     app_info *app;
-     //遍历链表
-     list_for_each(pos, head)
-     {
-     app = list_entry(pos, app_info, app_info_node); 
-     printf("ap_id: %u\tup_flow: %u\tdown_flow: %u\n",
-         app->app_id, app->up_flow, app->down_flow);
- 
-     }
- }
- 
- void destroy_app_list(struct list_head *head)
- {
-     struct list_head *pos = head->next;
-     struct list_head *tmp = NULL;
-     while (pos != head)
-     {
-     tmp = pos->next;
-     list_del(pos);
-     pos = tmp;
-     }
- }
-	
-	
 	
 /**
   * @brief  WFGUI_Phone,电话窗口
@@ -464,63 +430,19 @@ void WFGUI_Phone(void)
 	/* 创建按键窗口 */
 	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone->hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhoneKey, 0);	
 
-	/* 记录当前窗口 */
-	#if 0
-	App_Insert(hPhone->hAPP);
-	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	#else
+	/* 添加结点到链表 */
 	hAPPLinkedList_AddTail(hPhone);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 
-	#endif
 	/* 初始化并检测模块 */
 	if (sim900a_init()!= 0)
 	{
 		GUI_MessageBox("\r\n No detected SIM900A module! \r\n","error",GUI_MESSAGEBOX_CF_MOVEABLE);
 		}
-		
-	
+			
 
 	WM_SetFocus(hEdit);		
 		
-//	{	
-//		
-//		struct list_head *head;
-//		 app_info *app;
-//	 //创建一个app_info
-//     app_info * app_info_list = (app_info*)malloc(sizeof(app_info));
-//    
-//     if (app_info_list == NULL)
-//     {
-////     fprintf(stderr, "Failed to malloc memory, errno:%u, reason:%s\n",
-////         errno, strerror(errno));
-//     return ;
-//     }
-//     //初始化链表头部
-//     head = &app_info_list->app_info_node;
-//     INIT_LIST_HEAD(head);
-//     //插入三个app_info
-//     app = get_app_info(1001, 100, 200);
-//    list_add_tail(&app->app_info_node, head);
-//     app = get_app_info(1002, 80, 100);
-//     list_add_tail(&app->app_info_node, head);
-//     app = get_app_info(1003, 90, 120);
-//     list_add_tail(&app->app_info_node, head);
-//     printf("After insert three app_info: \n");
-//     for_each_app(head);
-//     //将第一个节点移到末尾
-//     printf("Move first node to tail:\n");
-//     list_move_tail(head->next, head);
-//     for_each_app(head);
-//     //删除最后一个节点
-//     printf("Delete the last node:\n");
-//     list_del(head->prev);
-//     for_each_app(head);
-//     destroy_app_list(head);
-//     free(app_info_list);
-
-//}
-		
-
 	
 }

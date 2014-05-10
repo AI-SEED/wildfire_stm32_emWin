@@ -222,7 +222,11 @@ static void _ToggleFullScreenMode(WM_HWIN hDlg) {
 static void _cbTEMPWin(WM_MESSAGE * pMsg) {
   int i, NCode, Id, Value;
   WM_HWIN hDlg, hItem;
+	HANDLE_LIST *appNode;
+	
+	
   hDlg = pMsg->hWin;
+	
   switch (pMsg->MsgId) {
 		
   case WM_INIT_DIALOG:																//初始化
@@ -359,12 +363,16 @@ static void _cbTEMPWin(WM_MESSAGE * pMsg) {
 		
 		
 	case WM_DELETE:
-		/* 删除app句柄链表里的记录 */	
-//		App_Delete(pMsg->hWin);
-//	
-//		/* 发送消息通知ctrl窗口*/		
-//		WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
-	
+		/* 获取app句柄对应的链表结点 */
+		appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+		if(appNode != NULL)
+		{
+			/* 删除app句柄链表里的记录 */	
+			hAPPLinkedList_Del(appNode);
+		
+			/* 发送消息通知ctrl窗口*/		
+			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+		}
 		break;		
 		
   default:
@@ -486,26 +494,30 @@ static void _AddValues(WM_HWIN hGraph) {
   * @retval none
   */
 void WFGUI_Temperature(void) {
-  WM_HWIN hDlg, hGraph = 0;
+  WM_HWIN  hGraph = 0;
+	
+	HANDLE_LIST *hDlg = hAPPLinkedList_NewNode();
+	
   WM_SetCreateFlags(WM_CF_MEMDEV);
 	
 	/* 根据资源表，创建温度计窗口 */
-  hDlg = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbTEMPWin,WinPara.hWinMain , 0, 0);
+  hDlg->hAPP = GUI_CreateDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbTEMPWin,WinPara.hWinMain , 0, 0);
   
-	/* 把app句柄插入链表 */
-	App_Insert(hDlg);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hDlg);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 
 	InitTEMPSensor();	
 
 	/* 如果本窗口有效，则一直更新数据 */
-	while (WM_IsWindow(hDlg)) {
+	while (WM_IsWindow( hDlg->hAPP)) {
     if (!_Stop) 
 		{
 			GUI_Delay(10);
       if (!hGraph) 
 			{
-        hGraph = WM_GetDialogItem(hDlg, GUI_ID_GRAPH0);
+        hGraph = WM_GetDialogItem( hDlg->hAPP, GUI_ID_GRAPH0);
       }
       //_AddValues(hGraph);
 			GetTEMPData();

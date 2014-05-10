@@ -191,6 +191,7 @@ static int _GetPNGData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 O
 static void _cbImageWin(WM_MESSAGE * pMsg)
 {
 	int  Id;
+	HANDLE_LIST *appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
 
@@ -200,12 +201,17 @@ static void _cbImageWin(WM_MESSAGE * pMsg)
 #endif	
 			
 			case WM_DELETE:
-				/* 删除app句柄链表里的记录 */	
-				App_Delete(pMsg->hWin);
-			
-				/* 发送消息通知ctrl窗口*/		
-				WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
-			
+				
+				/* 获取app句柄对应的链表结点 */
+				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+				if(appNode != NULL)
+				{
+					/* 删除app句柄链表里的记录 */	
+					hAPPLinkedList_Del(appNode);
+				
+					/* 发送消息通知ctrl窗口*/		
+					WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+				}
 			
 				break;
 		
@@ -462,10 +468,12 @@ static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
   * @retval 无
   */
 void ImageReader_FrameWin( char * file_name) {
-	WM_HWIN hFrame;
-	WM_HWIN hFrameC;
 	
-	hFrame = FRAMEWIN_CreateEx(	0,
+	WM_HWIN hFrameC;
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
+
+	
+	hFrame->hAPP = FRAMEWIN_CreateEx(	0,
 															0,
 															WinPara.xSizeWin,
 															WinPara.ySizeWin,
@@ -477,23 +485,24 @@ void ImageReader_FrameWin( char * file_name) {
 															0);
 	
 		/* 创建窗口按钮 */
-	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
-//	FRAMEWIN_AddMaxButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 1);
-//	FRAMEWIN_AddMinButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 2);
+	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
+//	FRAMEWIN_AddMaxButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 1);
+//	FRAMEWIN_AddMinButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 2);
 
 
-	/* 把app句柄插入链表 */
-	App_Insert(hFrame);
-	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 	
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldImageWin = WM_SetCallback(hFrame, _cbImageWin );	//获取旧的回调函数指针
+	_pcbOldImageWin = WM_SetCallback(hFrame->hAPP, _cbImageWin );	//获取旧的回调函数指针
 
 	
-	FRAMEWIN_SetText(hFrame,file_name);
+	FRAMEWIN_SetText(hFrame->hAPP,file_name);
 	
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
 	
 	/* 在客户窗口显示图片 */
@@ -516,7 +525,7 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 	WM_HWIN		hButton;
 	WM_HWIN 	hImage;
 	WM_HWIN 	hText ;
-
+	HANDLE_LIST *appNode;
 
 	
 	int        NCode;
@@ -587,12 +596,16 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 		
 		case WM_DELETE:			
 				
-			/* 删除app句柄链表里的记录 */	
-			App_Delete(pMsg->hWin);
-		
-			/* 发送消息通知ctrl窗口*/		
-			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	
+			/* 获取app句柄对应的链表结点 */
+			appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+			if(appNode != NULL)
+			{
+				/* 删除app句柄链表里的记录 */	
+				hAPPLinkedList_Del(appNode);
+			
+				/* 发送消息通知ctrl窗口*/		
+				WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+			}
 			break;
 		
 		case WM_PAINT:
@@ -663,10 +676,12 @@ static void Image_Display(int sel_num ,WM_HWIN hParent)
 void WFGUI_ImageReader(void)
 {
 	
-	WM_HWIN hImage;	
+	//WM_HWIN hImage;	
+	HANDLE_LIST *hImage = hAPPLinkedList_NewNode();
+
 	
 	/* 创建图片浏览器窗口 */
-	hImage = WM_CreateWindowAsChild(0,
+	hImage->hAPP = WM_CreateWindowAsChild(0,
 																	0,
 																	WinPara.xSizeWin,
 																	WinPara.ySizeWin ,
@@ -675,8 +690,9 @@ void WFGUI_ImageReader(void)
 																	_cbImageAPPWin,
 																	0);	
 	
-		/* 把app句柄插入链表 */
-	App_Insert(hImage);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hImage);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 
 	/* 扫描图片文件 */
@@ -685,7 +701,7 @@ void WFGUI_ImageReader(void)
 	GUI_Delay(10);	
 
 	/* 显示第一幅图像 */
-	Image_Display(0,hImage);
+	Image_Display(0,hImage->hAPP);
 
 
 }

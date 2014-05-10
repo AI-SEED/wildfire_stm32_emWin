@@ -45,7 +45,8 @@ static  HANDLE_LIST hAppHead;				//链表头部
   */
 void hAPPLinkedList_Del(HANDLE_LIST *node)
 {
-	if (node == NULL)
+	/* TBD node在释放时没有被设置为NULL */
+	if (node == NULL || (node->listNode.next == NULL && node->listNode.prev == NULL))
 	 {
 		 DEBUG("\r\n hAPP linkedList free error\r\n ");
 		return ;
@@ -56,6 +57,7 @@ void hAPPLinkedList_Del(HANDLE_LIST *node)
 	 
 	 /* 释放结点的malloc空间 */
 	 free(node);
+	 	 
 }
 
 

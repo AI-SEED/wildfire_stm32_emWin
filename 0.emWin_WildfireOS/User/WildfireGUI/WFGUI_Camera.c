@@ -90,13 +90,16 @@ static void _cbCamera(WM_MESSAGE * pMsg)
   */
 void WFGUI_Camera(void)
 {
-	WM_HWIN hCamera;
+	HANDLE_LIST *hCamera = hAPPLinkedList_NewNode();
 	
 	/* 创建电话窗口 */
-	hCamera = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCamera, 0);	
+	hCamera->hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCamera, 0);	
 	
 	/* 记录当前窗口 */
-	App_Insert(hCamera);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hCamera);
+	/* 向ctrl窗口发送消息 */
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
 	/* 初始化摄像头 */
 	//Camera_Init();

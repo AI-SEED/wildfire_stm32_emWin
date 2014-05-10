@@ -271,6 +271,7 @@ static int _CreateListWheel(int x, int y, int xSize, int ySize, int Id, char ** 
 static void _cbTimeWin(WM_MESSAGE * pMsg)
 {
 	int  Id;
+	HANDLE_LIST	*appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
 
@@ -280,12 +281,17 @@ static void _cbTimeWin(WM_MESSAGE * pMsg)
 #endif	
 			
 			case WM_DELETE:
-				/* 删除app句柄链表里的记录 */	
-				App_Delete(pMsg->hWin);
-			
-				/* 发送消息通知ctrl窗口*/		
-				WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
-			
+				
+				/* 获取app句柄对应的链表结点 */
+				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+				if(appNode != NULL)
+				{
+					/* 删除app句柄链表里的记录 */	
+					hAPPLinkedList_Del(appNode);
+				
+					/* 发送消息通知ctrl窗口*/		
+					WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+				}
 			
 				break;
 		
@@ -535,34 +541,37 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 
 void WFGUI_Time(void) {
   WM_HWIN hBkWheel;
-	WM_HWIN hFrame;									//sdview窗口句柄
   WM_HWIN hFrameC;								//子窗口句柄
 	WM_HWIN hText;
 	WM_HWIN hButton;
 	WM_HWIN hListWheel;
 	uint16_t ListWheelPosY;
+	
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
+
 
 	WM_SetCreateFlags(WM_CF_MEMDEV);
 	
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN8,"Time",0);
+	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN8,"Time",0);
 
 	/* 创建窗口按钮 */
-  FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
-  FRAMEWIN_AddMaxButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 1);
-  FRAMEWIN_AddMinButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 2);
+  FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
+  FRAMEWIN_AddMaxButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 1);
+  FRAMEWIN_AddMinButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 2);
 	
-	/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
+	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldTimeWin = WM_SetCallback(hFrame, _cbTimeWin);	//获取旧的回调函数指针
+	_pcbOldTimeWin = WM_SetCallback(hFrame->hAPP, _cbTimeWin);	//获取旧的回调函数指针
 	
 	
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 	
 	ListWheelPosY = WM_GetWindowSizeY(hFrameC)-140;  //140用来显示listwheel，20用来显示button
 

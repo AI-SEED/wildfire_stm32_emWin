@@ -85,6 +85,7 @@ static void _cbDlgWin(WM_MESSAGE * pMsg) {
 static void _cbSDViewWin(WM_MESSAGE * pMsg)
 {
 	int  Id;
+	HANDLE_LIST	*appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
 
@@ -94,13 +95,16 @@ static void _cbSDViewWin(WM_MESSAGE * pMsg)
 #endif	
 			
 			case WM_DELETE:
-				/* 删除app句柄链表里的记录 */	
-				App_Delete(pMsg->hWin);
-			
-				/* 发送消息通知ctrl窗口*/		
-				WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
-			
-			
+					/* 获取app句柄对应的链表结点 */
+					appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+					if(appNode != NULL)
+					{
+						/* 删除app句柄链表里的记录 */	
+						hAPPLinkedList_Del(appNode);
+					
+						/* 发送消息通知ctrl窗口*/		
+						WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+					}
 				break;
 		
 			default:		
@@ -410,11 +414,14 @@ void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Han
  void Fill_TreeView(FILE_TYPE fileType ,char* record_file)
 { 
 
-	WM_HWIN hFrame;									//sdview窗口句柄
+	//WM_HWIN hFrame;									//sdview窗口句柄
   WM_HWIN hFrameC;								//子窗口句柄
 	
 	WM_HWIN hTree;	  							//目录树句柄
   TREEVIEW_ITEM_Handle hNode;			//结点句柄
+	
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
+
 	
 
   //
@@ -426,25 +433,27 @@ void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Han
 //  GUI_DispStringHCenterAt("scanning sd Card...", WinPara.xSizeWin >> 1, WinPara.ySizeWin / 3);
   //GUI_X_Delay(100);
 
-	hFrame = FRAMEWIN_CreateUser(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN0,"SD View",0,50);
+	hFrame->hAPP = FRAMEWIN_CreateUser(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN0,"SD View",0,50);
 
-	FRAMEWIN_SetResizeable(hFrame,1);
+	FRAMEWIN_SetResizeable(hFrame->hAPP,1);
 	/* 创建窗口按钮 */
-  FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
-  FRAMEWIN_AddMaxButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 1);
-  FRAMEWIN_AddMinButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 2);
+  FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
+  FRAMEWIN_AddMaxButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 1);
+  FRAMEWIN_AddMinButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 2);
 	
 	/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
 	//WM_SetCallback(hFrame,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldSDViewWin = WM_SetCallback(hFrame, _cbSDViewWin);	//获取旧的回调函数指针
+	_pcbOldSDViewWin = WM_SetCallback(hFrame->hAPP, _cbSDViewWin);	//获取旧的回调函数指针
 	
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
   //
   // 创建目录树
@@ -463,7 +472,7 @@ void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Han
 	Fill_FileList("0:",record_file,hTree,hNode,fileType,NULL);
 	
 	/* 设置recordfile，在回调函数中使用到 */
-	FRAMEWIN_SetUserData(hFrame,&record_file ,sizeof(char*));	
+	FRAMEWIN_SetUserData(hFrame->hAPP,&record_file ,sizeof(char*));	
 
 }
 

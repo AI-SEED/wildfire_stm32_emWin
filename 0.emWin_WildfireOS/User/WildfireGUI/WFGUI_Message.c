@@ -38,6 +38,7 @@ static const BITMAP_ITEM _MessageIcon[] = {
 static void _cbMesgCtrlWin(WM_MESSAGE * pMsg)
 {
 	int  Id;
+	HANDLE_LIST *appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
 
@@ -47,12 +48,17 @@ static void _cbMesgCtrlWin(WM_MESSAGE * pMsg)
 #endif	
 			
 			case WM_DELETE:
-				/* 删除app句柄链表里的记录 */	
-				App_Delete(pMsg->hWin);
-			
-				/* 发送消息通知ctrl窗口*/		
-				WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
-			
+				
+				/* 获取app句柄对应的链表结点 */
+				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+				if(appNode != NULL)
+				{
+					/* 删除app句柄链表里的记录 */	
+					hAPPLinkedList_Del(appNode);
+				
+					/* 发送消息通知ctrl窗口*/		
+					WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+				}
 			
 				break;
 		
@@ -92,6 +98,7 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 	//WM_MESSAGE Close_Msg;
 	WM_HWIN hNum;
 	WM_HWIN hText;
+	HANDLE_LIST *appNode;
 	
 	hNum  = WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT0);
 	hText = WM_GetDialogItem(pMsg->hWin,GUI_ID_MULTIEDIT1);
@@ -156,10 +163,17 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 					else if(Id == GUI_ID_BUTTON2)		//取消按钮
 					{				
 
-						/* 关闭窗口 */
-						App_Delete(WM_GetParent(pMsg->hWin));
-						
-						WM_DeleteWindow(WM_GetParent(pMsg->hWin));
+							/* 获取app句柄对应的链表结点 */
+							appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+							if(appNode != NULL)
+							{
+								/* 删除app句柄链表里的记录 */	
+								hAPPLinkedList_Del(appNode);
+									
+								/* 删除窗口 */
+								WM_DeleteWindow(WM_GetParent(pMsg->hWin));
+
+							}
 						}						
 				 
 					 break;
@@ -197,7 +211,6 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
   */
 static void Mesg_New(char *path)
 {
-	WM_HWIN hFrame;
 	WM_HWIN hFrameC;
 	
 
@@ -205,23 +218,27 @@ static void Mesg_New(char *path)
 	WM_HWIN hText;
 	WM_HWIN hEdit;
 	WM_HWIN hButton;
+	
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
 
-	/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_SF_MOVEABLE,GUI_ID_FRAMEWIN10,"Write a Message",0);
+
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
+	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+	_pcbOldMessageWin = WM_SetCallback(hFrame->hAPP, _cbMesgCtrlWin);	//获取旧的回调函数指针
 	
 	/* 创建窗口按钮 */
-	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
 	
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
 	/* 设置信息api的回调函数 */
 	WM_SetCallback(hFrameC,_cbMesgNew);	
@@ -250,7 +267,7 @@ static void Mesg_New(char *path)
 	BUTTON_SetText(hButton,"Cancle");
 	
 	/* 添加键盘 */
-	KeypadInit(hFrame); 
+	KeypadInit(hFrame->hAPP); 
 
 
 }
@@ -396,30 +413,33 @@ static void _cbDraftBox(WM_MESSAGE * pMsg)
   */
 static void Mesg_InBox(void)
 {
-	WM_HWIN hFrame;
 	WM_HWIN hFrameC;
 	WM_HWIN hListView;	
 	WM_HWIN hHeader;
+	
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
 
-		/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"In box",0);
+
+		/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
+	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+	_pcbOldMessageWin = WM_SetCallback(hFrame->hAPP, _cbMesgCtrlWin);	//获取旧的回调函数指针
 
 	
 	/* 创建窗口按钮 */
-	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
 
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
-	FRAMEWIN_SetClientColor(hFrame,GUI_WHITE);
+	FRAMEWIN_SetClientColor(hFrame->hAPP,GUI_WHITE);
 	
 	hListView = LISTVIEW_CreateEx(0,0, WM_GetWindowSizeX(hFrameC), WM_GetWindowSizeY(hFrameC),hFrameC,WM_CF_SHOW,NULL,GUI_ID_LISTVIEW0);
 
@@ -440,37 +460,40 @@ static void Mesg_InBox(void)
   */
 static void Mesg_OutBox(void)
 {
-	WM_HWIN hFrame;
+
 	WM_HWIN hFrameC;
 	WM_HWIN hListView;	
 	WM_HWIN hHeader;
 	
 	const GUI_ConstString NewMesg[]={"NewMesg","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
 
-		/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Out box",0);
+
+		/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
+	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+	_pcbOldMessageWin = WM_SetCallback(hFrame->hAPP, _cbMesgCtrlWin);	//获取旧的回调函数指针
 
 
 	/* 创建窗口按钮 */
-	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
 
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
-	FRAMEWIN_SetClientColor(hFrame,GUI_WHITE);	
+	FRAMEWIN_SetClientColor(hFrame->hAPP,GUI_WHITE);	
 
 	/* 设置信息api的回调函数 */
 	WM_SetCallback(hFrameC,_cbOutBox);
 
-	FRAMEWIN_SetClientColor(hFrame,GUI_WHITE);
+	FRAMEWIN_SetClientColor(hFrame->hAPP,GUI_WHITE);
 	
 	hListView = LISTVIEW_CreateEx(0,0, WM_GetWindowSizeX(hFrameC), WM_GetWindowSizeY(hFrameC),hFrameC,WM_CF_SHOW,NULL,GUI_ID_LISTVIEW0);
 
@@ -490,35 +513,37 @@ static void Mesg_OutBox(void)
   */
 static void Mesg_DraftBox(void)
 {
-	WM_HWIN hFrame;
 	WM_HWIN hFrameC;
 	WM_HWIN hListView;	
 	WM_HWIN hHeader;
 	
 	const GUI_ConstString NewDraft[]={"NewDraft","-","-"};
 
-	hFrame = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
+	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
 
-	/* 把app句柄插入链表 */
-	App_Insert(hFrame);
+
+	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE,GUI_ID_FRAMEWIN10,"Draft box",0);
+
+		/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hFrame);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	
-	//WM_SetCallback(hFrame,_cbSDViewWin);
+	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
-	_pcbOldMessageWin = WM_SetCallback(hFrame, _cbMesgCtrlWin);	//获取旧的回调函数指针
+	_pcbOldMessageWin = WM_SetCallback(hFrame->hAPP, _cbMesgCtrlWin);	//获取旧的回调函数指针
 
 	
 	/* 创建窗口按钮 */
-	FRAMEWIN_AddCloseButton(hFrame, FRAMEWIN_BUTTON_RIGHT, 0);
+	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
 
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP);
 
 	/* 设置信息api的回调函数 */
 	WM_SetCallback(hFrameC,_cbDraftBox);
 
-	FRAMEWIN_SetClientColor(hFrame,GUI_WHITE);
+	FRAMEWIN_SetClientColor(hFrame->hAPP,GUI_WHITE);
 	
 	hListView = LISTVIEW_CreateEx(0,0, WM_GetWindowSizeX(hFrameC), WM_GetWindowSizeY(hFrameC),hFrameC,WM_CF_SHOW,NULL,GUI_ID_LISTVIEW0);
 
@@ -543,6 +568,8 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 {
 	WM_HWIN    hWin;
 	WM_HWIN    hIcon;
+	
+	HANDLE_LIST *appNode;
 	
 	int        NCode;
   int        Id;
@@ -635,12 +662,16 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
 		
 		case WM_DELETE:			
 				
-			/* 删除app句柄链表里的记录 */	
-			App_Delete(pMsg->hWin);
-		
-			/* 发送消息通知ctrl窗口*/		
-			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	
+					/* 获取app句柄对应的链表结点 */
+				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+				if(appNode != NULL)
+				{
+					/* 删除app句柄链表里的记录 */	
+					hAPPLinkedList_Del(appNode);
+				
+					/* 发送消息通知ctrl窗口*/		
+					WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+				}
 			break;
 		
 		case WM_PAINT:
@@ -667,10 +698,10 @@ static void _cbMesgWin(WM_MESSAGE * pMsg)
   */
 void WFGUI_Message(void)
 {
-	WM_HWIN hMessage;
-	
+	HANDLE_LIST *hMessage = hAPPLinkedList_NewNode();
+
 	/* 创建短信窗口 */
-	hMessage = WM_CreateWindowAsChild(0,
+	hMessage->hAPP = WM_CreateWindowAsChild(0,
 																		0,
 																		WinPara.xSizeWin,
 																		WinPara.ySizeWin ,
@@ -679,8 +710,10 @@ void WFGUI_Message(void)
 																		_cbMesgWin,
 																		0);	
 	
-		/* 把app句柄插入链表 */
-	App_Insert(hMessage);
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hMessage);
+	/* 向ctrl窗口发送消息 */
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
 		/* 初始化并检测模块 */

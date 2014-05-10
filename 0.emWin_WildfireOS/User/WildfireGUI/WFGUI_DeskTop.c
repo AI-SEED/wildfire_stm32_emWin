@@ -57,7 +57,7 @@
 
 
 
-#define  GUI_DEVELOP
+//#define  GUI_DEVELOP
 
 
 /*********************************************************************
@@ -118,7 +118,7 @@ SD_FONT SDFont;				//使用外部字体时需要用到的数据结构
 *
 **********************************************************************
 */
-
+#if 0
 /**
   * @brief  AppIndexInit,初始化应用索引表
   * @param  none
@@ -207,7 +207,7 @@ WM_HWIN App_Delete(WM_HWIN NewApp)
 	
 
 }
-
+#endif
 
 
 /**
@@ -392,24 +392,17 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 				{
 					if(Id == GUI_ID_BUTTON0)
 					{
-						#if 0
-						WM_HWIN hActive;
-						
-						hActive = App_GetTopWin();
-						WM_DeleteWindow(hActive);
-						App_Delete(hActive);	
-						#else
-						HANDLE_LIST *hAPPOnTop;
-						/* 获取最上层的窗口句柄 */
-						hAPPOnTop =	hAPPLinkedList_GetAppTop();
-						if(hAPPOnTop != NULL)
-						{
-							WM_DeleteWindow(hAPPOnTop->hAPP);	//	关闭窗口
-							hAPPLinkedList_Del(hAPPOnTop);		//	从链表删除结点
-							
-						}
-						
-						#endif
+				
+							HANDLE_LIST *hAPPOnTop;
+							/* 获取最上层的窗口句柄 */
+							hAPPOnTop =	hAPPLinkedList_GetAppTop();
+							if(hAPPOnTop != NULL)
+							{
+								WM_DeleteWindow(hAPPOnTop->hAPP);	//	关闭窗口
+							//	hAPPLinkedList_Del(&hAPPOnTop);		//	从链表删除结点
+								
+							}						
+					
 						
 						}
 						else if(Id == GUI_ID_BUTTON1)						
@@ -1181,8 +1174,7 @@ static void CreatMainWin(void)
 														_cbIconWin,
 														0
 														);
-	/* 初始化链表 */													
-	hAPPLinkedList_Init();													
+												
 																	
 	
 
@@ -1223,9 +1215,8 @@ static void CreatDeskTop(void)
 	CreatCtrlWin();
 	CreatMainWin();
 	
-	App_IndexInit();
-	
-
+	/* 初始化app链表 */													
+	hAPPLinkedList_Init();	
 
 	
 }

@@ -125,14 +125,14 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Temperature;	//温度计
 
 
 /* 公有函数 */
-extern void 			App_Insert			(WM_HWIN NewApp);
-extern WM_HWIN 		App_Delete			(WM_HWIN NewApp);
-extern WM_HWIN 		App_GetTopWin		(void);
+//extern void 			App_Insert			(WM_HWIN NewApp);
+//extern WM_HWIN 		App_Delete			(WM_HWIN NewApp);
+//extern WM_HWIN 		App_GetTopWin		(void);
 
 /* hAPP链表函数 */
 extern HANDLE_LIST* 	hAPPLinkedList_NewNode		(void);
 extern void 					hAPPLinkedList_Init				(void);
-extern void 					hAPPLinkedList_Del				(HANDLE_LIST *node);
+extern void						hAPPLinkedList_Del				(HANDLE_LIST *node);
 extern void 					hAPPLinkedList_AddTail		(HANDLE_LIST *node);
 extern HANDLE_LIST* 	hAPPLinkedList_GetAppNode	(WM_HWIN hAPP);
 extern HANDLE_LIST* 	hAPPLinkedList_GetAppTop	(void);

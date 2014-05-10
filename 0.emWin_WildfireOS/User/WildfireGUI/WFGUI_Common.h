@@ -135,6 +135,7 @@ extern void 					hAPPLinkedList_Init				(void);
 extern void 					hAPPLinkedList_Del				(HANDLE_LIST *node);
 extern void 					hAPPLinkedList_AddTail		(HANDLE_LIST *node);
 extern HANDLE_LIST* 	hAPPLinkedList_GetAppNode	(WM_HWIN hAPP);
+extern HANDLE_LIST* 	hAPPLinkedList_GetAppTop	(void);
 
 
 

@@ -392,14 +392,24 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 				{
 					if(Id == GUI_ID_BUTTON0)
 					{
-						
-						int StayOnTop = 0;
+						#if 0
 						WM_HWIN hActive;
 						
 						hActive = App_GetTopWin();
 						WM_DeleteWindow(hActive);
 						App_Delete(hActive);	
-								
+						#else
+						HANDLE_LIST *hAPPOnTop;
+						/* 获取最上层的窗口句柄 */
+						hAPPOnTop =	hAPPLinkedList_GetAppTop();
+						if(hAPPOnTop != NULL)
+						{
+							WM_DeleteWindow(hAPPOnTop->hAPP);	//	关闭窗口
+							hAPPLinkedList_Del(hAPPOnTop);		//	从链表删除结点
+							
+						}
+						
+						#endif
 						
 						}
 						else if(Id == GUI_ID_BUTTON1)						
@@ -444,7 +454,7 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
 			break;
 			
 			case MY_MESSAGE_CTRLCHANGE:
-				if(App_GetTopWin()==0)			//没有app窗口，显示桌面索引
+				if(hAPPLinkedList_GetAppTop()==NULL)			//没有app窗口，显示桌面索引
 				{
 					hItem = WM_GetFirstChild(WinPara.hWinCtrl);
 					hItemNext = WM_GetNextSibling(hItem);
@@ -1103,7 +1113,6 @@ static void CreatCtrlWin(void)
 {
 	WM_HWIN hButtonWin;
 	
-//	static HANDLE_LIST 
 	
 	WinPara.hWinCtrl = WM_CreateWindowAsChild(
 																							0,											
@@ -1172,6 +1181,8 @@ static void CreatMainWin(void)
 														_cbIconWin,
 														0
 														);
+	/* 初始化链表 */													
+	hAPPLinkedList_Init();													
 																	
 	
 

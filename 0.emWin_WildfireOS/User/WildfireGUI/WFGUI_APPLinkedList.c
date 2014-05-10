@@ -85,6 +85,8 @@ HANDLE_LIST* hAPPLinkedList_GetAppNode(WM_HWIN hAPP)
 		/* TBD 这里有个warning，不知道影响大不大*/		
 		node = list_entry(pos,HANDLE_LIST,listNode);
 		
+		DEBUG("\r\n node.app =%ld \r\n ",node->hAPP);
+		
 		/* 返回与输入app句柄相同的结点 */
 		if(node->hAPP == hAPP)
 		{
@@ -98,6 +100,32 @@ HANDLE_LIST* hAPPLinkedList_GetAppNode(WM_HWIN hAPP)
 		return NULL;
 	
 	
+	
+}
+
+
+/**
+  * @brief  hAPPLinkedList_GetAppTop获取显示在最上层的窗口(即链表最后一个结点)
+  * @param  none
+  * @retval app结点句柄，没有的话返回NULL
+  */
+HANDLE_LIST* hAPPLinkedList_GetAppTop(void)
+{	
+	HANDLE_LIST *node;
+	
+	if(!list_empty(&hAppHead.listNode))					//若链表非空
+	{
+
+		/* hAppHead.listNode.prev 头结点的前一个结点，即尾部结点*/
+		node = list_entry(hAppHead.listNode.prev,HANDLE_LIST,listNode);
+		
+		DEBUG("\r\n node.app =%ld \r\n ",node->hAPP);
+
+		return node;
+
+	}		
+	else
+		return NULL;
 	
 }
 

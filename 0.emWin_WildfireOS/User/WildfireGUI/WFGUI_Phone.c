@@ -431,18 +431,19 @@ static void Phone_Calling(WM_HWIN Parent,char *num)
   */	
 void WFGUI_Phone(void)
 {
-	WM_HWIN hPhone;
+	//WM_HWIN hPhone;
 	WM_HWIN hEdit;
 	WM_HWIN hKeypad;
 	WM_HWIN hButton;	
 	
+	HANDLE_LIST *hPhone = hAPPLinkedList_NewNode();
 
 	
 	/* 创建电话窗口 */
-	hPhone = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
+	hPhone->hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
 
 	/* 创建号码窗口 */	
-	hEdit	= EDIT_CreateEx(0,0,240,80,hPhone,WM_CF_SHOW,0,GUI_ID_EDIT0,50);	
+	hEdit	= EDIT_CreateEx(0,0,240,80,hPhone->hAPP,WM_CF_SHOW,0,GUI_ID_EDIT0,50);	
 	
 	/* 设置文本框背景 */
 	EDIT_SetBkColor(hEdit,EDIT_CI_ENABLED,GUI_DARKGRAY);
@@ -461,12 +462,17 @@ void WFGUI_Phone(void)
 
 
 	/* 创建按键窗口 */
-	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhoneKey, 0);	
+	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone->hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhoneKey, 0);	
 
 	/* 记录当前窗口 */
-	App_Insert(hPhone);
+	#if 0
+	App_Insert(hPhone->hAPP);
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
-	
+	#else
+	hAPPLinkedList_AddTail(hPhone);
+	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
+
+	#endif
 	/* 初始化并检测模块 */
 	if (sim900a_init()!= 0)
 	{
@@ -477,43 +483,43 @@ void WFGUI_Phone(void)
 
 	WM_SetFocus(hEdit);		
 		
-	{	
-		
-		struct list_head *head;
-		 app_info *app;
-	 //创建一个app_info
-     app_info * app_info_list = (app_info*)malloc(sizeof(app_info));
-    
-     if (app_info_list == NULL)
-     {
-//     fprintf(stderr, "Failed to malloc memory, errno:%u, reason:%s\n",
-//         errno, strerror(errno));
-     return ;
-     }
-     //初始化链表头部
-     head = &app_info_list->app_info_node;
-     INIT_LIST_HEAD(head);
-     //插入三个app_info
-     app = get_app_info(1001, 100, 200);
-    list_add_tail(&app->app_info_node, head);
-     app = get_app_info(1002, 80, 100);
-     list_add_tail(&app->app_info_node, head);
-     app = get_app_info(1003, 90, 120);
-     list_add_tail(&app->app_info_node, head);
-     printf("After insert three app_info: \n");
-     for_each_app(head);
-     //将第一个节点移到末尾
-     printf("Move first node to tail:\n");
-     list_move_tail(head->next, head);
-     for_each_app(head);
-     //删除最后一个节点
-     printf("Delete the last node:\n");
-     list_del(head->prev);
-     for_each_app(head);
-     destroy_app_list(head);
-     free(app_info_list);
+//	{	
+//		
+//		struct list_head *head;
+//		 app_info *app;
+//	 //创建一个app_info
+//     app_info * app_info_list = (app_info*)malloc(sizeof(app_info));
+//    
+//     if (app_info_list == NULL)
+//     {
+////     fprintf(stderr, "Failed to malloc memory, errno:%u, reason:%s\n",
+////         errno, strerror(errno));
+//     return ;
+//     }
+//     //初始化链表头部
+//     head = &app_info_list->app_info_node;
+//     INIT_LIST_HEAD(head);
+//     //插入三个app_info
+//     app = get_app_info(1001, 100, 200);
+//    list_add_tail(&app->app_info_node, head);
+//     app = get_app_info(1002, 80, 100);
+//     list_add_tail(&app->app_info_node, head);
+//     app = get_app_info(1003, 90, 120);
+//     list_add_tail(&app->app_info_node, head);
+//     printf("After insert three app_info: \n");
+//     for_each_app(head);
+//     //将第一个节点移到末尾
+//     printf("Move first node to tail:\n");
+//     list_move_tail(head->next, head);
+//     for_each_app(head);
+//     //删除最后一个节点
+//     printf("Delete the last node:\n");
+//     list_del(head->prev);
+//     for_each_app(head);
+//     destroy_app_list(head);
+//     free(app_info_list);
 
-}
+//}
 		
 
 	

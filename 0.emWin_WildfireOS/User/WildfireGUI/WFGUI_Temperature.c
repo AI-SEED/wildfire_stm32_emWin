@@ -522,7 +522,7 @@ void WFGUI_Temperature(void) {
       //_AddValues(hGraph);
 			GetTEMPData();
     }
-    GUI_Exec();
+			GUI_Delay(50);
   }
 }
 

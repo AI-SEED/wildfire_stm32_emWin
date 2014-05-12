@@ -96,13 +96,13 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 //  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
 //  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
 //	{&bmWF_Message, "Message"   , "Read or write message"},
-  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
+//  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
 //  {&bmWF_Note,    "Note"    , "Write a note"},
 //  {&bmWF_Calculator, "Calculator"   , "Calculator"},
 //  {&bmWF_Camera,"Camera", "Take a phone"},
 //	{&bmWF_Picture,  "Picture" , "Picture viewer"},
 //	{&bmWF_Map,  "Map" , "Map"},
-//  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
+  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
 
 
 };
@@ -780,7 +780,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 
 									ShowTips(pMsg->hWin);					//提示让用户等待
 
-									WFGUI_Phone(); 
+									WFGUI_Temperature(); 
 
 								break;
 #endif											

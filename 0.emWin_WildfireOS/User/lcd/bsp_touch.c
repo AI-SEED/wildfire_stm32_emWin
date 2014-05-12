@@ -242,7 +242,6 @@ uint8_t TOUCH_ReadAdcXY(uint16_t *_usX, uint16_t *_usY)
 */
 void TOUCH_Scan(void)
 {
-	uint8_t s_invalid_count = 0;
 	static uint8_t init = 0 ;
 	
 	//刚上电的前5次默认执行（否则有时显示字体模糊，原因不明），之后检测到触摸状态才执行（提高gui速度）

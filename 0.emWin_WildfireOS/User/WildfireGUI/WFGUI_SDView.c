@@ -185,6 +185,10 @@ static void OpenFileProcess(int sel_num,char* record_file)
 			file_name 	= (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 			
 			fres = f_open (&hFile, record_file, FA_READ ); 		            //打开创建索引文件
+    
+       if(fres != FR_OK)
+          return ;
+       
 			fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				        //根据索引值查找将要打开文件的路径
 			fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
 			fres = f_close (&hFile);
@@ -364,6 +368,8 @@ void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Han
 	file_name = (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 	
 	fres = f_open (&hFile, record_file, FA_READ|FA_WRITE|FA_CREATE_ALWAYS ); //打开创建索引文件
+     if(fres != FR_OK)
+      return ;
 
 	strcpy(p_path,path);						//复制目录名到指针
 	
@@ -402,11 +408,7 @@ void Fill_FileList(char* path,char* record_file,WM_HWIN hTree, TREEVIEW_ITEM_Han
   //
   // 输出系统信息
   //
-//	WM_SelectWindow(WinPara.hWinMain);
-//  GUI_DrawGradientV(0, 0, WinPara.xSizeWin,WinPara.ySizeWin, GUI_BLUE, GUI_BLACK);
-//  GUI_SetFont(GUI_FONT_20F_ASCII);
-//  GUI_DispStringHCenterAt("scanning sd Card...", WinPara.xSizeWin >> 1, WinPara.ySizeWin / 3);
-  //GUI_X_Delay(100);
+
 
 	hFrame->hAPP = FRAMEWIN_CreateUser(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN0,"SD View",0,50);
 

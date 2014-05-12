@@ -528,11 +528,9 @@ static void _cbWordWin(WM_MESSAGE * pMsg)
 *   Callback routine of keypad window
 */
 static void _cbKeyPad(WM_MESSAGE * pMsg) {
-  static int LowerCase;
   WM_HWIN    hWin;
   WM_HWIN    hButton;
   WM_HWIN	 hListBox;
-  WM_HWIN	hWordWin;
 	WM_HWIN hEdit;
 	
   static WM_HWIN   hTimer;
@@ -553,9 +551,6 @@ static void _cbKeyPad(WM_MESSAGE * pMsg) {
 
   hWin = pMsg->hWin;
   switch (pMsg->MsgId) {
-  case APP_INIT_LOWERCASE:
-    LowerCase = 0;
-    break;
 	
 
   case WM_CREATE:
@@ -578,13 +573,12 @@ static void _cbKeyPad(WM_MESSAGE * pMsg) {
 
 		
 
-	  hWordWin = WM_CreateWindowAsChild(
-		2,
-		4,
-		240*9,
-		24,
-		pMsg->hWin, WM_CF_SHOW |WM_CF_MEMDEV| WM_CF_MOTION_X, _cbWordWin, NULL
-	  );
+  WM_CreateWindowAsChild( 2,
+                          4,
+                          240*9,
+                          24,
+                          pMsg->hWin, WM_CF_SHOW |WM_CF_MEMDEV| WM_CF_MOTION_X, _cbWordWin, NULL
+                          );
 
 
 	
@@ -775,7 +769,6 @@ static void _cbKeyPad(WM_MESSAGE * pMsg) {
 
 void KeypadInit(WM_HWIN hFrame) {
  
-	WM_HWIN hKeypad;
 	
 		/* 使能存储器的使用 */	
 	 WM_SetCreateFlags(WM_CF_MEMDEV);
@@ -815,7 +808,7 @@ void KeypadInit(WM_HWIN hFrame) {
 	clrindex();
 
   /* 创建键盘 */ 
-  hKeypad = WM_CreateWindowAsChild(0, 110, 240, 140,hFrame , WM_CF_SHOW | WM_CF_STAYONTOP, _cbKeyPad, 0);
+  WM_CreateWindowAsChild(0, 110, 240, 140,hFrame , WM_CF_SHOW | WM_CF_STAYONTOP, _cbKeyPad, 0);
 
 }
 

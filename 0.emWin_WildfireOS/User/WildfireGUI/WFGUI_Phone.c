@@ -147,25 +147,13 @@ static void _cbCalling(WM_MESSAGE * pMsg)
 		
 		if(NCode == WM_NOTIFICATION_RELEASED )
 		{		
-			if(Id == GUI_ID_BUTTON0)				
+			if(Id == GUI_ID_BUTTON0)				       //挂电话按钮
 			{
 				/* 挂电话 */
-				SIM900A_HANGOFF();
-				
-				/* 关闭窗口 */		
-				/* 获取app句柄对应的链表结点 */
-				appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
-				if(appNode != NULL)
-				{
-					/* 删除app句柄链表里的记录 */	
-					hAPPLinkedList_Del(appNode);
+				SIM900A_HANGOFF();				
 						
-					/* 删除窗口 */
-					WM_DeleteWindow(WM_GetParent(pMsg->hWin));
-
-				}
-				
-			
+				/* 删除窗口 */
+				WM_DeleteWindow(WM_GetParent(pMsg->hWin));			
 			}
 			
 		}			
@@ -173,6 +161,21 @@ static void _cbCalling(WM_MESSAGE * pMsg)
 	
 		break;
 		
+    
+  case WM_DELETE:		
+
+			/* 获取app句柄对应的链表结点 */
+		appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
+		if(appNode != NULL)
+		{
+			/* 删除app句柄链表里的记录 */	
+			hAPPLinkedList_Del(appNode);
+		
+			/* 发送消息通知ctrl窗口*/		
+			WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
+		}
+	
+		break;  
 	
 	case WM_PAINT:
 		//
@@ -255,7 +258,6 @@ static void _cbPhoneKey(WM_MESSAGE * pMsg)
 				/* 确认拨打电话 */
 				else if(Id - ID_BUTTON == 13)
 				{
-					char *  rebuff;		
 					
 					char* num;//电话号码
 					int len;
@@ -285,32 +287,6 @@ static void _cbPhoneKey(WM_MESSAGE * pMsg)
 					
 					/* 释放空间 */
 					free(num);
-					
-					#if 0
-					rebuff = sim900a_waitask(0);
-					switch(rebuff[3])
-					{
-							case 'B':   //BUSY
-									DEBUG("\r\n你拨打的电话正忙，请稍后再拨");
-									break;
-							case '+':   //
-									//第一个:号后面的数据为:"拨打号码"
-									DEBUG("\r\n已接通");
-									SIM900A_CLEAN_RX();             //清除接收缓冲区
-									rebuff = sim900a_waitask(0);     //重新等待消息
-									if(rebuff[3] == 'N')
-									{
-											DEBUG("\r\n通话结束");
-									}
-									
-							
-									break;
-							case 'N':       //NO ANSWER
-									DEBUG("\r\n你拨打的电话暂时无人接听，请稍后再拨");
-							
-									break;
-					}
-					#endif				
 
 				}
 				/* 删除 */
@@ -348,21 +324,18 @@ static void _cbPhoneKey(WM_MESSAGE * pMsg)
   */
 static void Phone_Calling(WM_HWIN Parent,char *num)
 {
-	//WM_HWIN hPhone;
 	WM_HWIN hText;
-	WM_HWIN hKeypad;
-	WM_HWIN hButton;	
 	
-	HANDLE_LIST hPhone;
+	HANDLE_LIST *hPhone = hAPPLinkedList_NewNode();
 	
 	char DispText[60];
 	
 	/* 创建电话窗口 */
-	hPhone.hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
+	hPhone->hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhone, 0);	
 
 	sprintf(DispText,"Calling %s",num);
 	/* 创建号码窗口 */	
-	hText	= TEXT_CreateEx(0,0,240,80,hPhone.hAPP,WM_CF_SHOW,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,DispText);	
+	hText	= TEXT_CreateEx(0,0,240,80,hPhone->hAPP,WM_CF_SHOW,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,DispText);	
 	
 	/* 设置文本框背景 */
 	TEXT_SetBkColor(hText,GUI_DARKGRAY);
@@ -376,14 +349,13 @@ static void Phone_Calling(WM_HWIN Parent,char *num)
 	/* 设置文本对齐方式 */
 	TEXT_SetTextAlign(hText,TEXT_CF_HCENTER|TEXT_CF_VCENTER);
 		
-	
 
 	/* 创建按键窗口 */
-	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone.hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCalling, 0);		
+	WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone->hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCalling, 0);		
 	
-	/* 记录当前窗口 */
-	//App_Insert(hPhone);
-	
+	/* 添加结点到链表 */
+	hAPPLinkedList_AddTail(hPhone);
+	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 
 
@@ -397,10 +369,7 @@ static void Phone_Calling(WM_HWIN Parent,char *num)
   */	
 void WFGUI_Phone(void)
 {
-	//WM_HWIN hPhone;
 	WM_HWIN hEdit;
-	WM_HWIN hKeypad;
-	WM_HWIN hButton;	
 	
 	HANDLE_LIST *hPhone = hAPPLinkedList_NewNode();
 
@@ -428,7 +397,7 @@ void WFGUI_Phone(void)
 
 
 	/* 创建按键窗口 */
-	hKeypad = WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone->hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhoneKey, 0);	
+	WM_CreateWindowAsChild(0, 80, WinPara.xSizeWin,WinPara.ySizeWin-80 ,hPhone->hAPP , WM_CF_SHOW | WM_CF_STAYONTOP, _cbPhoneKey, 0);	
 
 	/* 添加结点到链表 */
 	hAPPLinkedList_AddTail(hPhone);

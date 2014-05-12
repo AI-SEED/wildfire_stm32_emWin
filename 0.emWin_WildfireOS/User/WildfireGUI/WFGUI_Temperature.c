@@ -1,8 +1,3 @@
-
-
-
-
-
 /*********************************************************************
 *                SEGGER Microcontroller GmbH & Co. KG                *
 *        Solutions for real time microcontroller applications        *
@@ -56,7 +51,6 @@ static GRAPH_DATA_Handle  _ahData[3]; /* Array of handles for the GRAPH_DATA obj
 static GRAPH_SCALE_Handle _hScaleV;   /* Handle of vertical scale */
 static GRAPH_SCALE_Handle _hScaleH;   /* Handle of horizontal scale */
 
-static I16 _aValue[3];
 static int _Stop;
 
 static GUI_COLOR _aColor[] = {GUI_RED, GUI_GREEN, GUI_LIGHTBLUE}; /* Array of colors for the GRAPH_DATA objects */
@@ -407,11 +401,10 @@ static void InitTEMPSensor(void)
 	}
 	else if(DS18B20_Init() == SUCCESS)			//检测ds18b20
 	{
-		float temp;
 		sensor_type = DS18B20;	
 		
-		/* DS18B20第一个数据是85度，舍弃*/
-		temp = DS18B20_Get_Temp();
+		/* DS18B20刚上电的数据是85度，舍弃*/
+		DS18B20_Get_Temp();
 		GUI_Delay(800);
 
 	}		
@@ -463,28 +456,6 @@ static void GetTEMPData(void)
 
 }
 
-
-/**
-  * @brief  _AddValues 添加新数据到图形控件
-	*					
-  * @param  none
-  * @retval none
-  */
-
-static void _AddValues(WM_HWIN hGraph) {
-  int i;
-  for (i = 0; i < GUI_COUNTOF(_aColor); i++) {
-    int Add = rand() % (2 + i * i);
-    int Vz  = ((rand() % 2) << 1) - 1;
-    _aValue[i] += Add * Vz;
-    if (_aValue[i] > MAX_VALUE) {
-      _aValue[i] = MAX_VALUE;
-    } else if (_aValue[i] < 0) {
-      _aValue[i] = 0;
-    }
-    GRAPH_DATA_YT_AddValue(_ahData[i], _aValue[i]);
-  }
-}
 
 
 /**

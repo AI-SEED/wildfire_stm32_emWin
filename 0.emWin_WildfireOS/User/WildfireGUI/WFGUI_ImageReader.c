@@ -59,6 +59,9 @@ static int _GetData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off)
   * Set file pointer to the required position
   */ 
 	fres =  f_lseek (phFile, Off);
+    
+    if(fres != FR_OK)
+      return 0;
 
 	/*
   * Read data into buffer
@@ -126,7 +129,10 @@ static int _GetPNGData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 O
   //
   // Set file pointer to the required position
   //
-  f_lseek(phFile, Off);
+  fres = f_lseek(phFile, Off);
+  
+    if(fres != FR_OK)
+      return 0;
   //
   // Read data into buffer
 
@@ -636,6 +642,10 @@ static void Image_Display(int sel_num ,WM_HWIN hParent)
 		file_name 	= (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 		
 		fres = f_open (&hFile, IMAGE_LIST_PATH, FA_READ ); 		        //打开创建索引文件
+      
+      if(fres != FR_OK)
+        return ;
+  
 		fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				        //根据索引值查找将要打开文件的路径
 		fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
 		fres = f_close (&hFile);	

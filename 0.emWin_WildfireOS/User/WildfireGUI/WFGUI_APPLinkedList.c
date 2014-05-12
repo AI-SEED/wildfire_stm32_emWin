@@ -32,7 +32,6 @@ static  HANDLE_LIST hAppHead;				//Á´±íÍ·²¿
   */
  void hAPPLinkedList_Init(void)
 {
-	//HANDLE_LIST * hAppHead = WFGUI_hAPPLinkedList_NewNode();
 	
 	INIT_LIST_HEAD(&hAppHead.listNode );
 
@@ -101,7 +100,7 @@ HANDLE_LIST* hAPPLinkedList_GetAppNode(WM_HWIN hAPP)
 	if(pos == &hAppHead.listNode)
 		return NULL;
 	
-	
+	return NULL;
 	
 }
 

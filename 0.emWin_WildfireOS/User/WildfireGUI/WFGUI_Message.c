@@ -118,7 +118,7 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 						textLen = MULTIEDIT_GetTextSize(hText);
 						
 						num 		= (char *)malloc(sizeof(char)*numLen);
-						text		= (char *)malloc(sizeof(char)*numLen);			//UTF8编码可能为3字节一个，可能为1字节一个
+						text		= (char *)malloc(sizeof(char)*textLen);			//UTF8编码可能为3字节一个，可能为1字节一个
 						textUC	= (char *)malloc(sizeof(char)*numLen*2);		//UC编码全为2字节一个			
 						
 						MULTIEDIT_GetText(hNum,num,numLen);                 //电话号码,数字的UTF8编码即ASCII码，无需转换
@@ -136,19 +136,30 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 					}
 					else if(Id == GUI_ID_BUTTON1)		                      //保存按钮
 					{
+            //TBD 保存草稿这部分代码未测试 ，而且这样没有按格式保存，没什么用
 						FIL hFile;
 						FRESULT res;
 						UINT rwb;
+            
+            /*获取数据长度*/
+						numLen  = MULTIEDIT_GetTextSize(hNum);
+						textLen = MULTIEDIT_GetTextSize(hText);
 						
-						MULTIEDIT_GetText(hNum,num,sizeof(num));            //电话号码
+						num 		= (char *)malloc(sizeof(char)*numLen);
+						text		= (char *)malloc(sizeof(char)*textLen);			//UTF8编码可能为3字节一个，可能为1字节一个
 						
-						MULTIEDIT_GetText(hText,text,sizeof(text));         //短信内容
+						MULTIEDIT_GetText(hNum,num,numLen);            //电话号码
+						
+						MULTIEDIT_GetText(hText,text,textLen);         //短信内容
 						
 						res = f_open(&hFile,"0:WF_OS/Mesg/draftbox/newdraft.txt",FA_WRITE|FA_CREATE_ALWAYS);
+             
+              if(res != FR_OK)
+                return;
+              
+						f_write(&hFile,num,numLen,&rwb);
 						
-						f_write(&hFile,num,sizeof(num),&rwb);
-						
-						f_write(&hFile,text,sizeof(text),&rwb);
+						f_write(&hFile,text,textLen,&rwb);
 						
 						f_close(&hFile);
 
@@ -283,14 +294,11 @@ static void Mesg_Read(char *path)
   */
 static void _cbOutBox(WM_MESSAGE * pMsg)
 {
-	WM_HWIN    hWin;
 	
 	int        NCode;
   int        Id;
 	int        Sel;
 	
-	hWin = pMsg->hWin;	
-
 	switch (pMsg->MsgId) 
 	{
 		case WM_NOTIFY_PARENT:
@@ -342,15 +350,11 @@ static void _cbOutBox(WM_MESSAGE * pMsg)
   * @retval none
   */
 static void _cbDraftBox(WM_MESSAGE * pMsg)
-{
-	WM_HWIN    hWin;
-	
+{	
 	int        NCode;
   int        Id;
 	int        Sel;
 	
-	hWin = pMsg->hWin;	
-
 	switch (pMsg->MsgId) 
 	{
 		case WM_NOTIFY_PARENT:
@@ -503,7 +507,6 @@ static void Mesg_DraftBox(void)
 {
 	WM_HWIN hFrameC;
 	WM_HWIN hListView;	
-	WM_HWIN hHeader;
 	
 	const GUI_ConstString NewDraft[]={"NewDraft","-","-"};
 
@@ -535,7 +538,7 @@ static void Mesg_DraftBox(void)
 	
 	hListView = LISTVIEW_CreateEx(0,0, WM_GetWindowSizeX(hFrameC), WM_GetWindowSizeY(hFrameC),hFrameC,WM_CF_SHOW,NULL,GUI_ID_LISTVIEW0);
 
-	hHeader = LISTVIEW_GetHeader(hListView);
+	LISTVIEW_GetHeader(hListView);
 	
 
   LISTVIEW_AddColumn(hListView, WM_GetWindowSizeX(hFrameC)/4, "Time",    GUI_TA_CENTER);

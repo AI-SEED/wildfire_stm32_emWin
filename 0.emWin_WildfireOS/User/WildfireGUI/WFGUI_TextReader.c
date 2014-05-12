@@ -110,6 +110,9 @@ void TextReader(char *file_name )
 	DEBUG("file_name =%s",file_name);	
 	
 	fres = f_open (&hFile, file_name, FA_READ ); 				                //打开要阅读的文件
+  
+  if(fres != FR_OK)
+      return ;
 	
   /* 创建文本阅读控件 */
 	hMultiEdit=MULTIEDIT_CreateEx(0,

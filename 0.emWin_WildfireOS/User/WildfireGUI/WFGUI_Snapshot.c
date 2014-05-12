@@ -11,7 +11,7 @@
 
 
 
-
+//截图的存储路径
 #define SNAPSHOT_PATH 	"0:WF_OS/Snapshot/test2.bmp"
 
 
@@ -24,10 +24,14 @@ static void _WriteByte2File(U8 Data, void * p) {
 
 		UINT rwb;
 		
-		LED1_TOGGLE;
+    /* 点亮LED，表示正在截图 */
+		LED1_ON;            
+  
 		/* 写入数据 */
 		f_write((FIL *)p,&Data,1,&rwb);	
-		LED1_TOGGLE;
+  
+    /* 关闭LED，表示截图完成 */
+		LED1_OFF;
 }
 
 
@@ -45,7 +49,12 @@ void WFGUI_Snapshot(void)
 
 	/* 根据当前时间创建截图文件名 */
 	sprintf(fpath,"0:WF_OS/Snapshot/%04d%02d%02d_%02d%02d%02d.bmp",
-					systmtime.tm_year,systmtime.tm_mon,systmtime.tm_mday,systmtime.tm_hour,systmtime.tm_min,systmtime.tm_sec ); 
+					systmtime.tm_year,
+          systmtime.tm_mon,
+          systmtime.tm_mday,
+          systmtime.tm_hour,
+          systmtime.tm_min,
+          systmtime.tm_sec ); 
 	
 	/* 打开文件 */
 	res = f_open(&hFile,fpath,FA_CREATE_ALWAYS|FA_WRITE);
@@ -67,8 +76,6 @@ void WFGUI_Snapshot(void)
 	{
 		LED1_OFF;
 		MESSAGEBOX_Create("Snapshot failed!","Snapshot",0);
-		
-		
 
 	}
 }

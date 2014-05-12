@@ -208,9 +208,11 @@ static uint8_t USART_Scanf(uint32_t value)
  */
 void Time_Regulate(struct rtc_time *tm)
 {
+  
+  #if 0
 	  u32 Tmp_YY = 0xFF, Tmp_MM = 0xFF, Tmp_DD = 0xFF, Tmp_HH = 0xFF, Tmp_MI = 0xFF, Tmp_SS = 0xFF;
 	
-	#if 0
+	
 	  printf("\r\n=========================Time Settings==================");
 	
 	  printf("\r\n  请输入年份(Please Set Years):  20");
@@ -439,7 +441,6 @@ void RTC_TimeCovr(struct rtc_time *tm)
 {
 	
 	uint32_t BJ_TimeVar;
-	uint8_t str[15]; // 字符串暂存  	
 
 	/*  把标准时间转换为北京时间*/
 	BJ_TimeVar =	RTC_GetCounter() + 8*60*60;

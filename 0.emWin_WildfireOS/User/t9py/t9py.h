@@ -1,6 +1,9 @@
 #ifndef  __t9py_h
 #define  __t9py_h
 
+#include "stm32f10x.h"
+
+
 #define  UTF8_CODE  1
 
 #define   T9BD        0x00	  //标点输入
@@ -23,16 +26,7 @@
 #define   INDEX_Y     223	  // 索引显示首地址Y
 
 
-#if 0
-extern  uint16   straddrx;		//字符显示位置
-extern  uint16	 straddry;
-extern  uint16   t9pyaddrx;	    //拼音显示位置
-extern  uint16   t9pyaddry;
-extern  uint16   indexaddrx;	//索引显示位置
-extern  uint16   indexaddry;
 
-extern  uint8    hzbuff[512];   //输入256个汉字
-#endif
 
 extern  struct t9py_struct t9pyfun;
 extern const struct t9PY_index  t9PY_sz[];

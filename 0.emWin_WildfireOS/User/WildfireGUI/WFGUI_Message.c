@@ -19,7 +19,7 @@ static WM_CALLBACK*     _pcbOldMessageWin = NULL;
 
 /*********************************************************************
 *
-*       _aBitmapItem
+*       信息应用图标
 */
 static const BITMAP_ITEM _MessageIcon[] = {
   {&bmWF_Floder, "In box" , "Received messages box"},
@@ -30,14 +30,13 @@ static const BITMAP_ITEM _MessageIcon[] = {
 
 
 /**
-  * @brief  _cbMesgCtrlWin framewin框架的回调函数
+  * @brief  _cbMesgCtrlWin框架的回调函数
 	*					
   * @param  none
   * @retval none
   */
 static void _cbMesgCtrlWin(WM_MESSAGE * pMsg)
 {
-	int  Id;
 	HANDLE_LIST *appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
@@ -74,13 +73,13 @@ static void _cbMesgCtrlWin(WM_MESSAGE * pMsg)
 }
 
 
-static void Mesg_GetData(char *path)
-{
-	
 
-}
-
-
+/**
+  * @brief  _cbMesgNew新建信息回调函数
+	*					
+  * @param  none
+  * @retval none
+  */
 static void _cbMesgNew(WM_MESSAGE * pMsg)
 {
 	
@@ -95,7 +94,6 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 	char *text;
 	char *textUC;
 	
-	//WM_MESSAGE Close_Msg;
 	WM_HWIN hNum;
 	WM_HWIN hText;
 	HANDLE_LIST *appNode;
@@ -105,7 +103,7 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 	
   switch (pMsg->MsgId) {
 		
-		case WM_NOTIFY_PARENT:							//通知父窗口
+		case WM_NOTIFY_PARENT:							  //通知父窗口
 			
 		Id    = WM_GetId(pMsg->hWinSrc);      // 控件的ID
 		NCode = pMsg->Data.v;                 // 通知代码
@@ -123,33 +121,28 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 						text		= (char *)malloc(sizeof(char)*numLen);			//UTF8编码可能为3字节一个，可能为1字节一个
 						textUC	= (char *)malloc(sizeof(char)*numLen*2);		//UC编码全为2字节一个			
 						
-						MULTIEDIT_GetText(hNum,num,numLen);//电话号码,数字的UTF8编码即ASCII码，无需转换
+						MULTIEDIT_GetText(hNum,num,numLen);                 //电话号码,数字的UTF8编码即ASCII码，无需转换
 						
-						MULTIEDIT_GetText(hText,text,textLen);//短信内容					
+						MULTIEDIT_GetText(hText,text,textLen);              //短信内容					
 						
-//						GUI_UC_ConvertUTF82UC((const char GUI_UNI_PTR*)text,numLen,(unsigned short *)textUC,numLen*2);
-//						
-//						sim900a_sms(num,textUC);
-
+            /* 发送短信 */
 						sim900a_sms_utf8(num,text,numLen,textLen);
-						
-
-						
+												
 						/*释放空间*/
 						free(num);
 						free(textUC);
 						free(text);
 											
 					}
-					else if(Id == GUI_ID_BUTTON1)		//保存按钮
+					else if(Id == GUI_ID_BUTTON1)		                      //保存按钮
 					{
 						FIL hFile;
 						FRESULT res;
 						UINT rwb;
 						
-						MULTIEDIT_GetText(hNum,num,sizeof(num));//电话号码
+						MULTIEDIT_GetText(hNum,num,sizeof(num));            //电话号码
 						
-						MULTIEDIT_GetText(hText,text,sizeof(text));//短信内容
+						MULTIEDIT_GetText(hText,text,sizeof(text));         //短信内容
 						
 						res = f_open(&hFile,"0:WF_OS/Mesg/draftbox/newdraft.txt",FA_WRITE|FA_CREATE_ALWAYS);
 						
@@ -160,7 +153,7 @@ static void _cbMesgNew(WM_MESSAGE * pMsg)
 						f_close(&hFile);
 
 					}
-					else if(Id == GUI_ID_BUTTON2)		//取消按钮
+					else if(Id == GUI_ID_BUTTON2)		                      //取消按钮
 					{				
 
 							/* 获取app句柄对应的链表结点 */
@@ -216,7 +209,6 @@ static void Mesg_New(char *path)
 
 	WM_HWIN hMulti;
 	WM_HWIN hText;
-	WM_HWIN hEdit;
 	WM_HWIN hButton;
 	
 	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
@@ -229,7 +221,6 @@ static void Mesg_New(char *path)
 	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
 
 	//	TBD 使用回调函数会出现无法移动框架窗口的情况
 	_pcbOldMessageWin = WM_SetCallback(hFrame->hAPP, _cbMesgCtrlWin);	//获取旧的回调函数指针
@@ -293,7 +284,6 @@ static void Mesg_Read(char *path)
 static void _cbOutBox(WM_MESSAGE * pMsg)
 {
 	WM_HWIN    hWin;
-	WM_HWIN    hIcon;
 	
 	int        NCode;
   int        Id;
@@ -309,13 +299,13 @@ static void _cbOutBox(WM_MESSAGE * pMsg)
 			NCode = pMsg->Data.v;                 // 通知代码
 				 
 			switch (Id) {
-				case GUI_ID_LISTVIEW0:								// ListView
+				case GUI_ID_LISTVIEW0:							// ListView
 					switch (NCode) {
 						case WM_NOTIFICATION_RELEASED:
 						Sel = LISTVIEW_GetSel(pMsg->hWinSrc);
 							if(Sel == 0)
 							{								
-								Mesg_New((char*)Sel);
+								Mesg_New((char*)Sel);       //创建新的信息
 							}
 							else
 							{
@@ -354,7 +344,6 @@ static void _cbOutBox(WM_MESSAGE * pMsg)
 static void _cbDraftBox(WM_MESSAGE * pMsg)
 {
 	WM_HWIN    hWin;
-	WM_HWIN    hIcon;
 	
 	int        NCode;
   int        Id;
@@ -463,7 +452,6 @@ static void Mesg_OutBox(void)
 
 	WM_HWIN hFrameC;
 	WM_HWIN hListView;	
-	WM_HWIN hHeader;
 	
 	const GUI_ConstString NewMesg[]={"NewMesg","-","-"};
 

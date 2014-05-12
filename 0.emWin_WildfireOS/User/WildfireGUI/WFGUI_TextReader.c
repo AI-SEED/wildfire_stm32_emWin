@@ -20,7 +20,6 @@ static WM_CALLBACK*     _pcbOldSDViewWin = NULL;
   */
 static void _cbTextReaderWin(WM_MESSAGE * pMsg)
 {
-	int  Id;
 	HANDLE_LIST *appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
@@ -55,6 +54,7 @@ static void _cbTextReaderWin(WM_MESSAGE * pMsg)
 	
 }
 
+
 /**
   * @brief  文本阅读器
   * @param  要打开的文件名  
@@ -66,7 +66,7 @@ void TextReader(char *file_name )
 	unsigned int rw_num;			//已读或已写的字节数
 	FRESULT fres;							//返回结果
 	char* read_buffer; 
-	//WM_HWIN hFrame;
+
 	WM_HWIN hFrameC;
 	WM_HWIN hMultiEdit;
 	
@@ -77,15 +77,15 @@ void TextReader(char *file_name )
 	*read_buffer ='\0';
 
 	hFrame->hAPP = FRAMEWIN_CreateEx(	0,
-															0,
-															WinPara.xSizeWin,
-															WinPara.ySizeWin,
-															WinPara.hWinMain,
-															WM_CF_SHOW,
-															FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,
-															GUI_ID_FRAMEWIN1,
-															"eBook Reader",
-															0);															
+                                    0,
+                                    WinPara.xSizeWin,
+                                    WinPara.ySizeWin,
+                                    WinPara.hWinMain,
+                                    WM_CF_SHOW,
+                                    FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,
+                                    GUI_ID_FRAMEWIN1,
+                                    "eBook Reader",
+                                    0);															
 
 	/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
@@ -95,10 +95,10 @@ void TextReader(char *file_name )
 	
 	/* 添加结点到链表 */
 	hAPPLinkedList_AddTail(hFrame);
-	/* 向ctrl窗口发送消息 */
+	
+  /* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//	TBD 使用回调函数会出现无法移动框架窗口的情况
 	_pcbOldSDViewWin = WM_SetCallback(hFrame->hAPP, _cbTextReaderWin);	//获取旧的回调函数指针
 
 	
@@ -109,20 +109,32 @@ void TextReader(char *file_name )
 	
 	DEBUG("file_name =%s",file_name);	
 	
-	fres = f_open (&hFile, file_name, FA_READ ); 				//打开要阅读的文件
+	fres = f_open (&hFile, file_name, FA_READ ); 				                //打开要阅读的文件
 	
-	hMultiEdit=MULTIEDIT_CreateEx(0,0,WM_GetWindowSizeX(hFrameC),WM_GetWindowSizeY(hFrameC),hFrameC,WM_CF_SHOW,MULTIEDIT_CF_READONLY|MULTIEDIT_CF_AUTOSCROLLBAR_V,GUI_ID_MULTIEDIT0,0,0);
+  /* 创建文本阅读控件 */
+	hMultiEdit=MULTIEDIT_CreateEx(0,
+                                0,
+                                WM_GetWindowSizeX(hFrameC),
+                                WM_GetWindowSizeY(hFrameC),
+                                hFrameC,WM_CF_SHOW,
+                                MULTIEDIT_CF_READONLY|MULTIEDIT_CF_AUTOSCROLLBAR_V,
+                                GUI_ID_MULTIEDIT0,
+                                0,
+                                0);
+                                
 	MULTIEDIT_SetFont(hMultiEdit,GUI_FONT_13B_ASCII);
 	MULTIEDIT_SetWrapWord(hMultiEdit);
 
-	while(hFile.fptr!=hFile.fsize) 		//如果指针指向了文件尾，表示数据全部读完
+  //TBD 这样显示文本，在读取大文件时会出错
+	while(hFile.fptr!=hFile.fsize) 		                                  //如果指针指向了文件尾，表示数据全部读完
 	{
 		fres = f_read(&hFile, read_buffer, 300, &rw_num);
 		if(rw_num<300)
-			read_buffer[rw_num]='\0';		//到了文件尾加上结束符
+			read_buffer[rw_num]='\0';		                                    //到了文件尾加上结束符
 		
 		MULTIEDIT_AddText(hMultiEdit,read_buffer);		
 	}
+  
 	fres = f_close (&hFile);	
 	
 	DEBUG("%s",read_buffer);
@@ -145,6 +157,7 @@ void TextReader(char *file_name )
 void WFGUI_TextReader(void)
 {
 
+  /* 扫描文本文件，生成目录树 */
 	Fill_TreeView(TEXTFILE,TEXT_LIST_PATH); 
 
 }

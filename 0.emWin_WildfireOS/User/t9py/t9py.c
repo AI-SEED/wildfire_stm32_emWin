@@ -21,27 +21,27 @@
 
 char print_buf[200];
 
-  /* exact-width unsigned integer types */
-typedef unsigned          char uint8;
-typedef unsigned short     int uint16;
-typedef unsigned           int uint32;
-typedef unsigned       __int64 uint64;
+/* exact-width unsigned integer types */
+//typedef unsigned          char uint8_t;
+//typedef unsigned short     int uint16_t;
+//typedef unsigned           int uint32_t;
+//typedef unsigned       __int64 uint64;
 
 struct t9PY_index
 {
-    const uint32 t9PY;
-    const uint8 *PY;
-    const uint8 *PY_mb;
+    const uint32_t t9PY;
+    const uint8_t *PY;
+    const uint8_t *PY_mb;
 };
 
 struct t9py_struct
 {
-	uint8  pysrf;       //输入法选项
-	uint8  key_len;		//按键数	
-	uint8  firstno;     //输入的第一个数字按键
-	uint8  mblen;       //查出码表的长度
-	uint8  mbtimes;     //码表切换的次数
-	uint32 t9py;		//数字按键组合,组合成16进制，比如按键246则为0x246
+	uint8_t  pysrf;       //输入法选项
+	uint8_t  key_len;		//按键数	
+	uint8_t  firstno;     //输入的第一个数字按键
+	uint8_t  mblen;       //查出码表的长度
+	uint8_t  mbtimes;     //码表切换的次数
+	uint32_t t9py;		//数字按键组合,组合成16进制，比如按键246则为0x246
 	const struct t9PY_index  *t9PY_addr;		//指向码表地址
 };
 struct  t9py_struct t9pyfun;  
@@ -3410,7 +3410,7 @@ const struct t9PY_index  t9PY_index9[] ={{0x92,"wa",PY_mb_wa},	  //74
                                          {0x986,"zuo",PY_mb_zuo}
 										 };
 
-const uint8 t9PY_indexlen[10] = {1,1,55,33,38,57,44,79,19,74};   //以每个数字键开始的拼音代码组合数量
+const uint8_t t9PY_indexlen[10] = {1,1,55,33,38,57,44,79,19,74};   //以每个数字键开始的拼音代码组合数量
 
 const struct t9PY_index  t9PY_sz[] ={{0x00,"0",&PY_mb_sz[0]},
 	  								 {0x01,"1",&PY_mb_sz[1]},
@@ -3465,10 +3465,10 @@ const struct t9PY_index  *t9PY_index_headno[]={t9PY_index0,
 *******************************************************************************/
 void py_index_sub(void)
 {
-	uint8 i;
-	uint8 flag = 0x55;
-	uint32 temp;
-	uint8 mblentemp;
+	uint8_t i;
+	uint8_t flag = 0x55;
+	uint32_t temp;
+	uint8_t mblentemp;
 	mblentemp = t9pyfun.mblen;
 
 	t9pyfun.mblen = 0x00;
@@ -3549,10 +3549,10 @@ void py_index_sub(void)
 
 void py_index_sub(void)
 {
-	uint8 i;
-	uint8 flag = 0x55;
-	uint32 temp;
-	uint8 mblentemp;
+	uint8_t i;
+	uint8_t flag = 0x55;
+	uint32_t temp;
+	uint8_t mblentemp;
 	mblentemp = t9pyfun.mblen;
 
 	t9pyfun.mblen = 0x00;
@@ -3684,18 +3684,18 @@ void PY_Disp(void)
 
 
 
-uint16   straddrx;		//字符显示位置
-uint16	 straddry;
-uint16   t9pyaddrx;	    //拼音显示位置
-uint16   t9pyaddry;
-uint16   indexaddrx;	//索引显示位置
-uint16   indexaddry;
-uint8    indexdata;     //索引值，也即选出的字在索引表中的位置.
+uint16_t   straddrx;		//字符显示位置
+uint16_t	 straddry;
+uint16_t   t9pyaddrx;	    //拼音显示位置
+uint16_t   t9pyaddry;
+uint16_t   indexaddrx;	//索引显示位置
+uint16_t   indexaddry;
+uint8_t    indexdata;     //索引值，也即选出的字在索引表中的位置.
 
-uint8    hzbuff[512];   //输入256个汉字
-uint16   hzlen;         //输放汉字的个数
-uint16   hzin;          //往缓冲区输入汉字的位置
-uint16   hzout;         //从缓冲区取出汉字的位置
+uint8_t    hzbuff[512];   //输入256个汉字
+uint16_t   hzlen;         //输放汉字的个数
+uint16_t   hzin;          //往缓冲区输入汉字的位置
+uint16_t   hzout;         //从缓冲区取出汉字的位置
 
 #define  indextablen    15  //每次显示索引处的长度，最大值为15个汉字。
 
@@ -3715,15 +3715,15 @@ uint16   hzout;         //从缓冲区取出汉字的位置
 #if 0
 void dispsrf(void)
 {
-	const uint8 *strsrf[] = {"标点","大写","小写","拼音","数字"};
-	const uint8 disp_srf[] = "输入法：";	
+	const uint8_t *strsrf[] = {"标点","大写","小写","拼音","数字"};
+	const uint8_t disp_srf[] = "输入法：";	
 	
 	SetFgColor(RED);
 	SetBgColor(TIANLANSE);
 	SetCharCoord(SRF_X,SRF_Y);	
 
-	PrintGB((uint8*)disp_srf,4);
-	PrintGB((uint8*)strsrf[t9pyfun.pysrf],2);
+	PrintGB((uint8_t*)disp_srf,4);
+	PrintGB((uint8_t*)strsrf[t9pyfun.pysrf],2);
 }
 #endif
 /*********************************************************************************************************
@@ -3739,7 +3739,7 @@ void dispsrf(void)
 **------------------------------------------------------------------------------------------------------
 ********************************************************************************************************/
 #if 0
-void dispgb(uint16 gbchar)
+void dispgb(uint16_t gbchar)
 {
 	SetFgColor(RED);
 	SetBgColor(TIANLANSE);
@@ -3763,7 +3763,7 @@ void dispgb(uint16 gbchar)
 ********************************************************************************************************/
 void dispsf(void)
 {
-	uint8 i=0,j=0;
+	uint8_t i=0,j=0;
 	SetFgColor(RED);
 	SetBgColor(TIANLANSE);
 	
@@ -3847,14 +3847,14 @@ void dispsf(void)
 				{
 				 	SetFgColor(WHITE);
 				 	SetBgColor(BLACK);
-				 	PrintoneGB((uint8*)(((*t9pyfun.t9PY_addr).PY_mb+i)));	
+				 	PrintoneGB((uint8_t*)(((*t9pyfun.t9PY_addr).PY_mb+i)));	
 			     	i += 2;
 				 	SetFgColor(RED);
 	             	SetBgColor(TIANLANSE);
 				}
 				else
 				{
-					PrintoneGB((uint8*)(((*t9pyfun.t9PY_addr).PY_mb+i)));	
+					PrintoneGB((uint8_t*)(((*t9pyfun.t9PY_addr).PY_mb+i)));	
 					i += 2;
 				}			
 			
@@ -3945,9 +3945,9 @@ void clrindex(void)
 #if 0
 void T9pyTask(unsigned int key)
 {
-	uint8 err;
-	uint16 i;
-	uint8 gbflag;
+	uint8_t err;
+	uint16_t i;
+	uint8_t gbflag;
 //	void *key;
 //	pdata = pdata;
 
@@ -3978,19 +3978,19 @@ suspendt9pytask:
 	//	key = OSMboxPend(KeyMbox,50,&err);
 	//	if (err == OS_NO_ERR)
 		{
-			if ((uint32)key == KEY_JH)		   // 输入法切换
+			if ((uint32_t)key == KEY_JH)		   // 输入法切换
 			{
 				if ((++t9pyfun.pysrf) > T9SZ)
 					t9pyfun.pysrf = T9DX; 
 			//	dispsrf();
 			}
-			else if ((uint32)key == KEY_XH)	   // 输入标点符号，
+			else if ((uint32_t)key == KEY_XH)	   // 输入标点符号，
 			{
 				 t9pyfun.mblen++;
 		         t9pyfun.t9PY_addr = t9PY_index0;
 			//	 dispsf();
 			}
-			else if (((uint32)key>=0x30) &&((uint32)key<=0x39))	  //输入内容
+			else if (((uint32_t)key>=0x30) &&((uint32_t)key<=0x39))	  //输入内容
 			{
 
 				sprintf(print_buf,"\r\n key = %x \r\n",key);
@@ -3999,7 +3999,7 @@ suspendt9pytask:
 
 				if (t9pyfun.pysrf == T9PY)
 				{
-					if (((uint32)key>=0x32) &&((uint32)key<=0x39))	  //输入内容
+					if (((uint32_t)key>=0x32) &&((uint32_t)key<=0x39))	  //输入内容
 					{
 
 				sprintf(print_buf,"\r\n key = %x \r\n",key);
@@ -4008,15 +4008,15 @@ suspendt9pytask:
 						t9pyfun.mbtimes = 0;
 						indexdata = 0;
 						if (t9pyfun.firstno == ' ')
-							t9pyfun.firstno = (uint32)key-0x30;
-						t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32)key - 0x30));
+							t9pyfun.firstno = (uint32_t)key-0x30;
+						t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32_t)key - 0x30));
 				sprintf(print_buf,"\r\n t9py = %x \r\n",t9pyfun.t9py);
 				OutputDebugString(print_buf);
 						py_index_sub();
 				//		dispsf();
 						
 					}
-					else if ((uint32)key == T9N00)					  //索引切换.
+					else if ((uint32_t)key == T9N00)					  //索引切换.
 					{
 						t9pyfun.t9PY_addr++;
 						t9pyfun.mbtimes++;
@@ -4028,7 +4028,7 @@ suspendt9pytask:
 						}
 				//		dispsf();
 					}
-					else if ((uint32)key == T9N01)			  //输入空格
+					else if ((uint32_t)key == T9N01)			  //输入空格
 					{
 						if (hzlen < 255)
 						{
@@ -4045,7 +4045,7 @@ suspendt9pytask:
 					if (hzlen < 255)
 					{
 						hzlen ++;
-						hzbuff[hzin++] = (uint32)key;
+						hzbuff[hzin++] = (uint32_t)key;
 						hzbuff[hzin++] = ' ';
 						clrindex();
 				//		dispsf();
@@ -4053,19 +4053,19 @@ suspendt9pytask:
 				}
 				else if ((t9pyfun.pysrf == T9DX) || (t9pyfun.pysrf == T9XX)) //输入字母
 				{
-					if (((uint32)key>=0x32) &&((uint32)key<=0x39))	  //输入内容
+					if (((uint32_t)key>=0x32) &&((uint32_t)key<=0x39))	  //输入内容
 					{
 						if (t9pyfun.firstno == ' ')
 						{
 							t9pyfun.mbtimes = 0;
 							indexdata = 0;						
-							t9pyfun.firstno = (uint32)key-0x30;
-							t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32)key - 0x30));
+							t9pyfun.firstno = (uint32_t)key-0x30;
+							t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32_t)key - 0x30));
 							py_index_sub();
 				//			dispsf();
 						} 						
 					}
-					else if ((uint32)key == T9N01)			  //输入空格
+					else if ((uint32_t)key == T9N01)			  //输入空格
 					{
 						if (hzlen < 255)
 						{
@@ -4078,7 +4078,7 @@ suspendt9pytask:
 					}
 				}											
 			}
-			else if ((uint32)key == KEY_LEFT)
+			else if ((uint32_t)key == KEY_LEFT)
 			{
 				if (t9pyfun.mblen > 0)
 				{ 										
@@ -4122,7 +4122,7 @@ suspendt9pytask:
 		//			PrintASCII("   ");
 				}				
 			}
-			else if ((uint32)key == KEY_RIGHT)
+			else if ((uint32_t)key == KEY_RIGHT)
 			{
 				if (t9pyfun.mblen>0)
 				{
@@ -4130,7 +4130,7 @@ suspendt9pytask:
 			//		dispsf();
 				}	
 			}
-			else if ((uint32)key == KEY_ENTER)
+			else if ((uint32_t)key == KEY_ENTER)
 			{
 				if (t9pyfun.mblen>0)
 				{
@@ -4161,7 +4161,7 @@ suspendt9pytask:
 				}
 	
 			}
-			else if ((uint32)key == KEY_MENU)
+			else if ((uint32_t)key == KEY_MENU)
 			{
 		//		OSTaskResume(GuiTaskPrio);	   //恢复GUI任务
 					goto suspendt9pytask;
@@ -4191,16 +4191,11 @@ suspendt9pytask:
 
 void T9pyTask(unsigned int key)
 {
-	uint8 err;
-	uint16 i;
-	uint8 gbflag;
-//	void *key;
-//	pdata = pdata;
+	uint8_t err;
+	uint16_t i;
+	uint8_t gbflag;
 
 suspendt9pytask:
-//	OSTaskSuspend(T9pyTaskPrio); 
-//	ClearScreen(TIANLANSE);
-//	SetBgColor(TIANLANSE);
 
 	hzlen = 0;
 	hzin = 0;
@@ -4208,8 +4203,6 @@ suspendt9pytask:
 	for (i=0;i<512;i++)
 	hzbuff[i] = 0x00;
 
-//	clrindex();
-//	t9pyfun.pysrf = T9PY;	   //初始输入法为拼音
 	straddrx = 0;
 	straddry = 16;
 	t9pyaddrx = 0;
@@ -4217,25 +4210,19 @@ suspendt9pytask:
 	indexaddrx = 80;	//索引显示位置
     indexaddry = 224;
 
-	if (((uint32)key>=0x30) &&((uint32)key<=0x39))	  //输入内容
+	if (((uint32_t)key>=0x30) &&((uint32_t)key<=0x39))	  //输入内容
 	{
 		if (t9pyfun.pysrf == T9PY)
 		{
-			if (((uint32)key>=0x32) &&((uint32)key<=0x39))	  //输入内容
+			if (((uint32_t)key>=0x32) &&((uint32_t)key<=0x39))	  //输入内容
 			{
-
-		//sprintf(print_buf,"\r\n key = %x \r\n",key);
-		//OutputDebugString(print_buf);
-
 				t9pyfun.mbtimes = 0;
 				indexdata = 0;
 				if (t9pyfun.firstno == ' ')
-					t9pyfun.firstno = (uint32)key-0x30;
-				t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32)key - 0x30));
+					t9pyfun.firstno = (uint32_t)key-0x30;
+				t9pyfun.t9py = ((t9pyfun.t9py<<4) | ((uint32_t)key - 0x30));
 
 				t9pyfun.key_len++;
-		//sprintf(print_buf,"\r\n t9py = %x \r\n",t9pyfun.t9py);
-		//OutputDebugString(print_buf);
 				py_index_sub();
 						
 			}
@@ -4243,19 +4230,19 @@ suspendt9pytask:
 		else if(t9pyfun.pysrf == T9SZ)
 		{
 			
-			t9pyfun.firstno = (uint32)key-0x30;
+			t9pyfun.firstno = (uint32_t)key-0x30;
 			py_index_sub();	
 		}
 		else if(t9pyfun.pysrf == T9DX)
 		{
 			
-			t9pyfun.firstno = (uint32)key-0x30;
+			t9pyfun.firstno = (uint32_t)key-0x30;
 			py_index_sub();	
 		}
 		else if(t9pyfun.pysrf == T9XX)
 		{
 			
-			t9pyfun.firstno = (uint32)key-0x30;
+			t9pyfun.firstno = (uint32_t)key-0x30;
 			py_index_sub();	
 		}
 	}

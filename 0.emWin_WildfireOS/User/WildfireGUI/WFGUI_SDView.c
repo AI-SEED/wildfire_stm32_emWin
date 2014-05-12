@@ -16,16 +16,8 @@ static void OpenFileProcess(int sel_num,char *record_file);
 
 
 
- //char file_name[FILE_NAME_LEN];
-
-	
-//static		FIL	file;								//文件句柄	
-//static  	FRESULT fres;							//返回结果
-//static		unsigned int rw_num;			//已读或已写的字节数
-static WM_CALLBACK*     _pcbOldFrame = NULL;
 static WM_CALLBACK*     _pcbOldSDViewWin = NULL;
 
-int xSize,ySize;
 
 /**
   * @brief  对话框用到的小工具资源表
@@ -49,21 +41,22 @@ static void _cbDlgWin(WM_MESSAGE * pMsg) {
   WM_HWIN hDlg, hItem;
   hDlg = pMsg->hWin;
   switch (pMsg->MsgId) {
-    case WM_INIT_DIALOG:									//初始化对话框时
+    
+    case WM_INIT_DIALOG:									        //初始化对话框
 			hItem = WM_GetDialogItem(hDlg, GUI_ID_TEXT0);
-			TEXT_SetFont(hItem,GUI_FONT_16_ASCII);	//设置text的字体
+			TEXT_SetFont(hItem,GUI_FONT_16_ASCII);	    //设置text的字体
       break;
     case WM_NOTIFY_PARENT:
-      Id    = WM_GetId(pMsg->hWinSrc);    /* Id of widget */
-      NCode = pMsg->Data.v;               /* Notification code */
+      Id    = WM_GetId(pMsg->hWinSrc);            //获取控件ID
+      NCode = pMsg->Data.v;                       //获取消息
       switch (NCode) {
 
-      case WM_NOTIFICATION_RELEASED:      /* React only if released */
-        if (Id == GUI_ID_YES) {           /* Yes Button */     
-					GUI_EndDialog(hDlg, 0);					//结束对话框，返回0
+      case WM_NOTIFICATION_RELEASED:              //控件被释放
+        if (Id == GUI_ID_YES) {                   // Yes Button     
+					GUI_EndDialog(hDlg, 0);					        //结束对话框，返回0
         }
-        if (Id == GUI_ID_NO) {        		/* No Button */
-          GUI_EndDialog(hDlg, 1);					//结束对话框，返回1
+        if (Id == GUI_ID_NO) {        		        // No Button
+          GUI_EndDialog(hDlg, 1);					        //结束对话框，返回1
         }
         break;
       }
@@ -84,7 +77,6 @@ static void _cbDlgWin(WM_MESSAGE * pMsg) {
   */
 static void _cbSDViewWin(WM_MESSAGE * pMsg)
 {
-	int  Id;
 	HANDLE_LIST	*appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
@@ -141,31 +133,20 @@ static void _cbSDViewWinC(WM_MESSAGE * pMsg)
 				
 				/* 查看选中了哪个项目 */
 				hNode = TREEVIEW_GetSel(pMsg->hWinSrc);		
-				/* 获取该项目的信息 */
+				
+        /* 获取该项目的信息 */
 				TREEVIEW_ITEM_GetInfo(hNode,&ItemInfo);
 				
-				if(ItemInfo.IsNode == 0)//叶子
+				if(ItemInfo.IsNode == 0)        //点击的是目录树的叶子（即文件）
 				{
 					char *record_file;
 					DEBUG("\r\n leaf num =%ld",hNode);					
 
-					/* 官方手册说切勿在回调函数中调用阻塞对话框，但这里调用了也没错误，就先这样用吧 */
-					/* 不在回调函数调用的话就可另外作标记了 */
-					/* 选yes 返回0 选no返回1*/
-//					if(	GUI_ExecDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbDlgWin, WinPara.hWinMain, 0, 0) == 0)
-//					{
-//									//open file
-//							DEBUG("\r\n open file");
-							/* 获取record_file 文件名*/
-							FRAMEWIN_GetUserData( WM_GetParent(pMsg->hWin),&record_file,sizeof(char *));
-							OpenFileProcess(hNode,record_file);
-//						}
-						
-					//设置选定为该叶子的父结点，防止误触发
-					//TREEVIEW_SetSel(pMsg->hWinSrc,TREEVIEW_GetItem(pMsg->hWinSrc,hNode,TREEVIEW_GET_PARENT));
-
+          /* 打开文件 */
+          FRAMEWIN_GetUserData( WM_GetParent(pMsg->hWin),&record_file,sizeof(char *));
+          OpenFileProcess(hNode,record_file);
 				}
-				else										//结点
+				else										        //结点
 				{					
 					DEBUG("\r\n node num =%ld",hNode);
 				}
@@ -191,15 +172,10 @@ static void _cbSDViewWinC(WM_MESSAGE * pMsg)
 static void OpenFileProcess(int sel_num,char* record_file)
 {
 	char* file_name;
-	char* read_buffer; 
 	FIL hFile;
 	FRESULT fres;							//返回结果
 	unsigned int rw_num;			//已读或已写的字节数
 
-	
-	WM_HWIN hFrame;
-	WM_HWIN hFrameC;
-	WM_HWIN hMultiEdit;
 	
 	/* 执行对话框，确定是否要打开文件，返回0表示确定 */
 	if(	GUI_ExecDialogBox(_aDialogCreate, GUI_COUNTOF(_aDialogCreate), &_cbDlgWin, WinPara.hWinMain, 0, 0) == 0)
@@ -208,8 +184,8 @@ static void OpenFileProcess(int sel_num,char* record_file)
 		
 			file_name 	= (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 			
-			fres = f_open (&hFile, record_file, FA_READ ); 		//打开创建索引文件
-			fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				//根据索引值查找将要打开文件的路径
+			fres = f_open (&hFile, record_file, FA_READ ); 		            //打开创建索引文件
+			fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				        //根据索引值查找将要打开文件的路径
 			fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
 			fres = f_close (&hFile);
 			
@@ -258,7 +234,7 @@ static void OpenFileProcess(int sel_num,char* record_file)
 static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, TREEVIEW_ITEM_Handle hNode,FILE_TYPE fileType,int *fileNum) 
 { 
 		
-    FRESULT res; 		//部分在递归过程被修改的变量，不用全局变量	
+    FRESULT res; 		          //部分在递归过程被修改的变量，不用全局变量	
     FILINFO fno; 
 		unsigned int rw_num;			//已读或已写的字节数
 
@@ -275,7 +251,7 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
     fno.lfsize = sizeof(lfn); 
 #endif 
 
-    res = f_opendir(&dir, path); //打开目录
+    res = f_opendir(&dir, path);                            //打开目录
     if (res == FR_OK) 
 			{ 
         i = strlen(path); 
@@ -299,15 +275,14 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 								}
 								
 							  sprintf(&path[i], "/%s", fn); 							//合成完整目录名
-                res = scan_files(path,file_name,hFile,hTree,hItem,fileType,fileNum);					//递归遍历 
+                res = scan_files(path,file_name,hFile,hTree,hItem,fileType,fileNum);		//递归遍历 
                 if (res != FR_OK) 
 									break; 																		//打开失败，跳出循环
                 path[i] = 0; 
             } 
-						else 																																	//是文件
+						else 																														//是文件
 						{ 
-						//	DEBUG("%s/%s hItem = %d  \r\n", path, fn,(int)hItem);								//输出文件名	
-							
+						
 							if(fileType == TEXTFILE )
 							{
 								if(!(strstr(fn,".txt")||strstr(fn,".TXT")
@@ -324,7 +299,7 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 								if(!(strstr(fn,".bmp")||strstr(fn,".BMP")||
 												strstr(fn,".jpg")||strstr(fn,".JPG")||
 													strstr(fn,".gif")||strstr(fn,".GIF")||
-														strstr(fn,".png")||strstr(fn,".PNG")))														//判断如果不是Image文件，跳出本函数
+														strstr(fn,".png")||strstr(fn,".PNG")))					//判断如果不是Image文件，跳出本函数
 														{
 															return res;																					
 														}
@@ -344,7 +319,8 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 								if (strlen(path)+strlen(fn)<FILE_NAME_LEN)
 								{
 									sprintf(file_name, "%s/%s", path,fn); 	
-									//存储文件名到filelist(含路径)										
+									
+                  //存储文件名到filelist(含路径)										
 									res = f_lseek (hFile, hItem*FILE_NAME_LEN);  
 									res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
 								}			
@@ -352,13 +328,12 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 							else																																		//不创建目录树
 							{
 								sprintf(file_name, "%s/%s", path,fn); 	
-								//存储文件名到filelist(含路径)										
+								
+                //存储文件名到filelist(含路径)										
 								res = f_lseek (hFile, (*fileNum)*FILE_NAME_LEN);  
 								res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						
 							
-								(*fileNum)++;	
-
-								//DEBUG(" fileNum =%d  \r\n", *fileNum);								//输出文件名	
+								(*fileNum)++;	                                                        //记录文件数目
 
 							}
            }//else

@@ -11,12 +11,6 @@
 #include "WFGUI_SDView.h"
 
 
-
-
-
-
-//	TBD 把这些图片显示函数整合在一起
-
 /* 直接定义成char类型，有可能地址不对齐，导致DMA传输出错 */
 //char _acBuffer[1024*4];
 
@@ -34,8 +28,6 @@ static void Image_Display(int sel_num,WM_HWIN hParent);
 
 
 
-
-
 /**
   * @brief  _GetData用于读取外存储器图像的函数 适用于bmp jpg gif文件
   * @param   p           - Pointer to application defined data.
@@ -46,16 +38,13 @@ static void Image_Display(int sel_num,WM_HWIN hParent);
 	*                 				beginning of the data stream.
 
   * @retval 读取到的字节数
-  */
-	
+  */	
 	
 static int _GetData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off) {
   UINT NumBytesRead;
   FIL * phFile;
-	FRESULT fres;	
-	
-	//char* _acBuffer =(char *)_acIntBuffer;
-	
+	FRESULT fres;		
+
   phFile = (FIL *)p;
 	
 	
@@ -94,7 +83,7 @@ static int _GetData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 Off)
 			read_count += NumBytesRead;
 
 		 }
-		 if(remain)/* 读取剩余字节 */
+		 if(remain)                                 // 读取剩余字节
 		 {
 			fres = f_read(phFile, _acBuffer + i*512, remain, &NumBytesRead);
 			read_count += NumBytesRead;
@@ -161,7 +150,7 @@ static int _GetPNGData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 O
 			read_count += NumBytesRead;
 
 		 }
-		 if(remain)/* 读取剩余字节 */
+		 if(remain)                                 //读取剩余字节 
 		 {
 			fres = f_read(phFile, pData + i*512, remain, &NumBytesRead);
 			read_count += NumBytesRead;
@@ -190,7 +179,6 @@ static int _GetPNGData(void * p, const U8 ** ppData, unsigned NumBytesReq, U32 O
   */
 static void _cbImageWin(WM_MESSAGE * pMsg)
 {
-	int  Id;
 	HANDLE_LIST *appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
@@ -238,9 +226,9 @@ static int GUI_JPEG_GetXSizeEx(GUI_GET_DATA_FUNC * pfGetData, void * p)
 {
 	GUI_JPEG_INFO JPEGInfo;
 	
-  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo);                     /* Get JPEG info structure */
+  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo);  /* 获取JPEG图片的信息 */
 	
-	return JPEGInfo.XSize;
+	return JPEGInfo.XSize;                       //返回XSize 
 }
 
 /**
@@ -253,9 +241,9 @@ static int GUI_JPEG_GetYSizeEx(GUI_GET_DATA_FUNC * pfGetData, void * p)
 {
 	GUI_JPEG_INFO JPEGInfo;
 	
-  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo);                     /* Get JPEG info structure */
+  GUI_JPEG_GetInfoEx(_GetData, p, &JPEGInfo); /* 获取JPEG图片的信息 */                   
 	
-	return JPEGInfo.YSize;
+	return JPEGInfo.YSize;                      //返回YSize
 }
 
 
@@ -267,7 +255,7 @@ static int GUI_JPEG_GetYSizeEx(GUI_GET_DATA_FUNC * pfGetData, void * p)
   */
 static int GUI_PNG_DrawScaledEx(GUI_GET_DATA_FUNC * pfGetData, void * p, int x0, int y0, int Num, int Denom)
 {
-		GUI_PNG_DrawEx( pfGetData,  p, 0, 0);
+	return	GUI_PNG_DrawEx( pfGetData,  p, 0, 0);  
 
 }
 
@@ -284,15 +272,16 @@ static int GUI_GIF_ActiveDrawEx(GUI_GET_DATA_FUNC * pfGetData, void * p, int x0,
   GUI_GIF_IMAGE_INFO ImageInfo = {0}; /* Info structure of one particular GIF image of the GIF file */
 
 	
-	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                     /* Get GIF info structure */
+	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                          /* 获取GIF图像信息 */
 
 	for (j = 0; j < GifInfo.NumImages; j++) 
 			{
-					GUI_GIF_DrawSubEx(pfGetData,p, x0, y0,j);            /* Draw sub image */
-					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);       /* Get sub image information */
-					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);    /* Use the Delay member of the ImageInfo structure for waiting a while */
+					GUI_GIF_DrawSubEx(pfGetData,p, x0, y0,j);                   /* 显示子图像 */
+					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);        /* 获取子图像信息 */
+					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);    /* 根据图像信息延时一段时间 */
 				}		
 
+  return 0;      
 }
 
 
@@ -309,20 +298,23 @@ static int GUI_GIF_ActiveDrawScaledEx(GUI_GET_DATA_FUNC * pfGetData, void * p, i
   GUI_GIF_IMAGE_INFO ImageInfo = {0}; /* Info structure of one particular GIF image of the GIF file */
 
 	
-	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                     /* Get GIF info structure */
+	GUI_GIF_GetInfoEx(pfGetData, p, &GifInfo);                            /* 获取GIF图像信息 */
 
 	for (j = 0; j < GifInfo.NumImages; j++) 
 			{
-					GUI_GIF_DrawSubScaledEx(pfGetData,p, x0, y0,j,Num,Denom);            /* Draw sub image */
-					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);       /* Get sub image information */
-					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);    /* Use the Delay member of the ImageInfo structure for waiting a while */
-				}		
+					GUI_GIF_DrawSubScaledEx(pfGetData,p, x0, y0,j,Num,Denom);     /* 按比例显示子图像 */
+					GUI_GIF_GetImageInfoEx(pfGetData, p, &ImageInfo, j);          /* 获取子图像信息 */
+					GUI_Delay(ImageInfo.Delay ? ImageInfo.Delay * 10 : 100);      /* 根据图像信息延时一段时间 */
+				}	
+
+  return 0;      
+        
 
 }
 
 
 /**
-  * @brief  ImageReader_Raw 显示图片
+  * @brief  ImageReader_Raw 在给定的父窗口显示图片
   * @param  file_name 图片文件名 ，hParent 父窗口句柄
 	*		
   * @retval 无
@@ -339,14 +331,17 @@ static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
 	/* 立即重绘窗口，否则图片会在窗口重绘时被刷掉 */
 	WM_PaintWindowAndDescs(hParent);
 
-	//选择其窗口用于绘制操作
+	/* 选择其窗口用于绘制操作 */ 
 	WM_SelectWindow(hParent);
 	
+  /* 获取父窗口大小 */
 	XSizeWin = WM_GetWindowSizeX(hParent);
 	YSizeWin = WM_GetWindowSizeY(hParent);
 	
+  /* 刷新父窗口 */
 	GUI_ClearRect(0, 0,XSizeWin, YSizeWin);	
 	
+  /* 根据文件名对图片函数指针进行赋值 */
 	if(strstr(file_name,".bmp")||strstr(file_name,".BMP"))
 	{
 	
@@ -388,9 +383,11 @@ static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
 	else 
 		return; //不支持的格式，跳出函数	
 	
+  /* 打开图片文件 */
 	fres = f_open(&hFile,file_name,  FA_READ|FA_OPEN_EXISTING| FA_OPEN_ALWAYS );
 	DEBUG("\r\n open extsting fres = %d",fres); 	
 	
+  /* 获取图片大小 */
 	XSize = ImageFun.GetXSizeEx(ImageFun.GetDataEx, &hFile);
   YSize = ImageFun.GetYSizeEx(ImageFun.GetDataEx, &hFile);
 	
@@ -486,18 +483,15 @@ void ImageReader_FrameWin( char * file_name) {
 	
 		/* 创建窗口按钮 */
 	FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
-//	FRAMEWIN_AddMaxButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 1);
-//	FRAMEWIN_AddMinButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 2);
 
 
 	/* 添加结点到链表 */
 	hAPPLinkedList_AddTail(hFrame);
-	/* 向ctrl窗口发送消息 */
+	
+  /* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 	
-	//	TBD 使用回调函数会出现无法移动框架窗口的情况
 	_pcbOldImageWin = WM_SetCallback(hFrame->hAPP, _cbImageWin );	//获取旧的回调函数指针
-
 	
 	FRAMEWIN_SetText(hFrame->hAPP,file_name);
 	
@@ -523,16 +517,12 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 {
 	WM_HWIN   hWin;
 	WM_HWIN		hButton;
-	WM_HWIN 	hImage;
 	WM_HWIN 	hText ;
 	HANDLE_LIST *appNode;
 
 	
 	int        NCode;
-  int        Id;
-	int        Sel;
-	
-	char 			 i;
+  int        Id;	
 	
 	static int ImageIndex = 0;
 	
@@ -541,7 +531,8 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 	switch (pMsg->MsgId) 
 	{
 		case WM_CREATE:	
-			/* 创建按键 */
+			
+      /* 创建按键 */
 			hButton = BUTTON_CreateEx(WinPara.xSizeWin-40,WinPara.ySizeWin-20,20, 20, 
 																		pMsg->hWin, WM_CF_SHOW|WM_CF_STAYONTOP,0, GUI_ID_BUTTON0);
 		
@@ -553,7 +544,7 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 		
 			BUTTON_SetText(hButton, ">");
 		
-			/* 文件路径 */
+			/* 显示文件路径 */
 			hText = TEXT_CreateEx(0,WinPara.ySizeWin-20,200,20,hWin,WM_CF_SHOW|WM_CF_HASTRANS,TEXT_CF_HCENTER|TEXT_CF_VCENTER,GUI_ID_TEXT0,NULL);
 	
 			TEXT_SetFont(hText,&GUI_Font16_ASCII);
@@ -568,20 +559,20 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 			 if(NCode == WM_NOTIFICATION_RELEASED)
 				 {
 				 
-					 if(Id == GUI_ID_BUTTON0)
+					 if(Id == GUI_ID_BUTTON0)           //上一张图片按钮
 					 {					 
 						 if(ImageIndex != 0)
 						{					
-							
+                /* 显示上一张图片 */
 							 Image_Display(--ImageIndex,hWin);
 						 }
 						 					
 					 } 
-					 else if(Id == GUI_ID_BUTTON1)
+					 else if(Id == GUI_ID_BUTTON1)      //下一张图片按钮
 					 {						 
 							if(ImageIndex<ImageNum )
 							{
-								
+								/* 显示下一张图片 */
 								Image_Display(++ImageIndex,hWin);
 							}
 						}
@@ -644,8 +635,8 @@ static void Image_Display(int sel_num ,WM_HWIN hParent)
 		
 		file_name 	= (char * ) malloc(FILE_NAME_LEN* sizeof(char));  //为存储目录名的指针分配空间
 		
-		fres = f_open (&hFile, IMAGE_LIST_PATH, FA_READ ); 		//打开创建索引文件
-		fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				//根据索引值查找将要打开文件的路径
+		fres = f_open (&hFile, IMAGE_LIST_PATH, FA_READ ); 		        //打开创建索引文件
+		fres = f_lseek (&hFile, sel_num*FILE_NAME_LEN);				        //根据索引值查找将要打开文件的路径
 		fres = f_read(&hFile, file_name, FILE_NAME_LEN, &rw_num);
 		fres = f_close (&hFile);	
 		
@@ -659,7 +650,7 @@ static void Image_Display(int sel_num ,WM_HWIN hParent)
 		/* 显示图片到窗口 */
 		ImageReader_Raw(file_name,hParent);	
 	
-		free(file_name);								//释放malloc空间		
+		free(file_name);								                               //释放malloc空间		
 		file_name = NULL;
 
 }
@@ -696,7 +687,6 @@ void WFGUI_ImageReader(void)
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);	
 
 	/* 扫描图片文件 */
-	//Image_scanf("0:",IMAGE_LIST_PATH);
 	Fill_FileList("0:",IMAGE_LIST_PATH,NULL,NULL,IMAGEFILE,&ImageNum);
 	GUI_Delay(10);	
 

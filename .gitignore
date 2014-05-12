@@ -33,3 +33,5 @@ JLinkLog.txt
 *.plg
 
 *.sct
+
+*.__i

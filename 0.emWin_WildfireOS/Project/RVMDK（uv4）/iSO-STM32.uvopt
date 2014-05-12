@@ -737,9 +737,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>27</ColumnNumber>
+      <ColumnNumber>28</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>28</TopLine>
+      <TopLine>63</TopLine>
       <CurrentLine>75</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\main.c</PathWithFileName>
@@ -1105,10 +1105,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>12</ColumnNumber>
+      <ColumnNumber>34</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>280</TopLine>
-      <CurrentLine>293</CurrentLine>
+      <TopLine>455</TopLine>
+      <CurrentLine>438</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_DeskTop.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_DeskTop.c</FilenameWithoutPath>
@@ -1137,10 +1137,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>40</ColumnNumber>
+      <ColumnNumber>94</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>463</TopLine>
-      <CurrentLine>488</CurrentLine>
+      <TopLine>314</TopLine>
+      <CurrentLine>336</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_SDView.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_SDView.c</FilenameWithoutPath>
@@ -1153,10 +1153,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>6</ColumnNumber>
+      <ColumnNumber>18</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>39</TopLine>
-      <CurrentLine>40</CurrentLine>
+      <TopLine>136</TopLine>
+      <CurrentLine>160</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_TextReader.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_TextReader.c</FilenameWithoutPath>
@@ -1169,10 +1169,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>27</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>209</TopLine>
-      <CurrentLine>219</CurrentLine>
+      <TopLine>669</TopLine>
+      <CurrentLine>527</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_ImageReader.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_ImageReader.c</FilenameWithoutPath>
@@ -1185,10 +1185,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>6</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>290</TopLine>
-      <CurrentLine>291</CurrentLine>
+      <TopLine>166</TopLine>
+      <CurrentLine>626</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Time.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Time.c</FilenameWithoutPath>
@@ -1201,10 +1201,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>6</ColumnNumber>
+      <ColumnNumber>3</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>57</TopLine>
-      <CurrentLine>58</CurrentLine>
+      <TopLine>266</TopLine>
+      <CurrentLine>279</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Message.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Message.c</FilenameWithoutPath>
@@ -1217,10 +1217,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>47</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>3250</TopLine>
-      <CurrentLine>3255</CurrentLine>
+      <TopLine>86</TopLine>
+      <CurrentLine>111</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Keypad.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Keypad.c</FilenameWithoutPath>
@@ -1249,10 +1249,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>6</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>83</TopLine>
-      <CurrentLine>93</CurrentLine>
+      <CurrentLine>86</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Camera.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Camera.c</FilenameWithoutPath>
@@ -1969,10 +1969,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>30</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>4221</TopLine>
+      <CurrentLine>4197</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\t9py\t9py.c</PathWithFileName>
       <FilenameWithoutPath>t9py.c</FilenameWithoutPath>

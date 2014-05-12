@@ -70,7 +70,7 @@ typedef struct {
 
 /*********************************************************************
 *
-*       Data for wheels
+*       wheel 数据
 */
 static char * _apYear[] = {
 "1970","1971","1972","1973","1974","1975","1976","1977","1978","1979","1980","1981","1982","1983","1984","1985","1986","1987","1988","1989","1990","1991",
@@ -100,21 +100,12 @@ NULL
 
 };
 
-//static char * _apSec[] =
-//{
-//"01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30",
-//"31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","00",
-//NULL
-
-//};
 
 
-
-
-
-  #define TRANS0 0x11000000
-  #define TRANS1 0xEE000000
-  #define TRANS2 0xFF000000 
+//透明颜色
+#define TRANS0 0x11000000
+#define TRANS1 0xEE000000
+#define TRANS2 0xFF000000 
 
 static WM_CALLBACK*     _pcbOldTimeWin = NULL;
 /*********************************************************************
@@ -123,10 +114,12 @@ static WM_CALLBACK*     _pcbOldTimeWin = NULL;
 *
 **********************************************************************
 */
-/*********************************************************************
-*
-*       _OwnerDraw
-*/
+/**
+  * @brief  _OwnerDraw listwheel的自画函数
+	*					
+  * @param  none
+  * @retval none
+  */
 static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO * pDrawItemInfo) {
   int xSizeWin, ySizeWin;
   WM_HWIN hWin;
@@ -190,26 +183,26 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO * pDrawItemInfo) {
 		//
 		// Gray gradients at top
 		//
-		GUI_DrawGradientV(0,                0,                   xSizeWin - 1, (ySizeWin * 2) / 10 - 1,               TRANS0,     TRANS1);
-		GUI_DrawGradientV(0, (ySizeWin * 2) / 10,                   xSizeWin - 1, (ySizeWin / 2) - (30 / 2) - 1, TRANS1,     TRANS2);
+		GUI_DrawGradientV(0,0,xSizeWin - 1,(ySizeWin * 2) / 10 - 1,TRANS0,TRANS1);
+		GUI_DrawGradientV(0, (ySizeWin * 2) / 10,xSizeWin - 1, (ySizeWin / 2) - (30 / 2) - 1, TRANS1,TRANS2);
 		
 
 		//
 		// Gray gradients at bottom
 		//
-		GUI_DrawGradientV(0, (ySizeWin / 2) + (30 / 2),     xSizeWin - 1, (ySizeWin / 2) + (30 / 2) + 2, 0x88000000, TRANS2);
-		GUI_DrawGradientV(0, (ySizeWin / 2) + (30 / 2) + 3, xSizeWin - 1, ySizeWin - (ySizeWin * 2) / 10 - 1,       TRANS2,     TRANS1);
-		GUI_DrawGradientV(0, ySizeWin - (ySizeWin * 2) / 10,           xSizeWin - 1, ySizeWin - 1,                          TRANS1,     TRANS0);
-		GUI_DrawGradientV(0, ySizeWin - 1,                          xSizeWin - 1, ySizeWin - 1,                          0x33000000, 0x33000000);
+		GUI_DrawGradientV(0, (ySizeWin / 2) + (30 / 2),xSizeWin - 1,(ySizeWin / 2) + (30 / 2) + 2, 0x88000000,TRANS2);
+		GUI_DrawGradientV(0, (ySizeWin / 2) + (30 / 2) + 3, xSizeWin - 1, ySizeWin - (ySizeWin * 2) / 10 - 1,TRANS2,TRANS1);
+		GUI_DrawGradientV(0, ySizeWin - (ySizeWin * 2) / 10,xSizeWin - 1, ySizeWin - 1,TRANS1,TRANS0);
+		GUI_DrawGradientV(0, ySizeWin - 1,xSizeWin - 1, ySizeWin - 1,0x33000000, 0x33000000);
 		//
 		// Translucent glass effect in the middle
 		//
 		GUI_SetColor(0x80000000);
-		GUI_DrawHLine((ySizeWin / 2) - (30 / 2),     0, xSizeWin - 1);
+		GUI_DrawHLine((ySizeWin / 2) - (30 / 2), 0, xSizeWin - 1);
 		GUI_SetColor(0x44000000);
 		GUI_DrawHLine((ySizeWin / 2) + (30 / 2) - 1, 0, xSizeWin - 1);
-		GUI_DrawGradientV(1, (ySizeWin / 2) - (30 / 2) + 1, xSizeWin - 2, (ySizeWin / 2) - 1,                    0x88FFFFFF, 0x55AAAAAA);
-		GUI_DrawGradientV(1, (ySizeWin / 2),                        xSizeWin - 2, (ySizeWin / 2) + (30 / 2) - 2, 0xBB000000, 0xBB000000);
+		GUI_DrawGradientV(1, (ySizeWin / 2) - (30 / 2) + 1, xSizeWin - 2, (ySizeWin / 2) - 1,0x88FFFFFF, 0x55AAAAAA);
+		GUI_DrawGradientV(1, (ySizeWin / 2),xSizeWin - 2,(ySizeWin / 2) + (30 / 2) - 2, 0xBB000000, 0xBB000000);
 
 		//
 		// Store result
@@ -226,10 +219,12 @@ static int _OwnerDraw(const WIDGET_ITEM_DRAW_INFO * pDrawItemInfo) {
 
 
 
-/*********************************************************************
-*
-*       _CreateListWheel
-*/
+/**
+  * @brief  _CreateListWheel 创建ListWheel的回调函数
+	*					
+  * @param  none
+  * @retval none
+  */
 static int _CreateListWheel(int x, int y, int xSize, int ySize, int Id, char ** apText, int NumItems, int Side, int TextAlign, WM_HWIN hParent) {
   WM_HWIN           hWin;
   int i, LineHeight;
@@ -254,8 +249,7 @@ static int _CreateListWheel(int x, int y, int xSize, int ySize, int Id, char ** 
     LISTWHEEL_SetRBorder(hWin, 10);
   }
 
-  // Fill WHEEL structure
-  //
+  
   return 0;
 }
 
@@ -270,7 +264,6 @@ static int _CreateListWheel(int x, int y, int xSize, int ySize, int Id, char ** 
   */
 static void _cbTimeWin(WM_MESSAGE * pMsg)
 {
-	int  Id;
 	HANDLE_LIST	*appNode;
 	
 		switch (pMsg->MsgId) {			//消息类型
@@ -306,10 +299,11 @@ static void _cbTimeWin(WM_MESSAGE * pMsg)
 	
 }
 
-/*********************************************************************
-*
-*       _cbBkWheel
-*/
+/**
+  * @brief  _cbBkWheel,wheel的回调窗口，处理各种消息
+  * @param  pMsg
+  * @retval none
+  */
 static void _cbBkWheel(WM_MESSAGE * pMsg) {
   int xSize, ySize;
 	int        Id;
@@ -338,7 +332,6 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 					{
 							//对所有的listwheel改变都进行如下操作，选中吸附的项，以使它变成蓝色。
 							case WM_NOTIFICATION_SEL_CHANGED:
-								//	printf("\r\n change");
 							
 							LISTWHEEL_SetSel(pMsg->hWinSrc,LISTWHEEL_GetPos(pMsg->hWinSrc));
 							break;
@@ -346,7 +339,6 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 							case WM_NOTIFICATION_RELEASED:
 								if(Id == GUI_ID_OK)
 								{
-									//printf("\r\n ok button");
 									/* 年 */
 									hListWheel 		= WM_GetDialogItem(pMsg->hWin, GUI_ID_LISTWHEEL0);
 									SrcTm.tm_year = LISTWHEEL_GetSel(hListWheel);
@@ -376,7 +368,6 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 									
 									
 									Time_Adjust_LCD(&systmtime,&SrcTm);
-								//	printf("\r\n %d,%d,%d  %d:%d:%d",SrcTm.tm_year,SrcTm.tm_mon,SrcTm.tm_mday,SrcTm.tm_hour,SrcTm.tm_min,SrcTm.tm_sec);
 									
 									
 									
@@ -386,15 +377,11 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 							default:
 								break;
 					}
-//				hParent = WM_GetParent(pMsg->hWin);
-//				pMsg->hWin = hParent;
-//				WM_SendMessage(hParent, pMsg);
     break;
 	
 
 	
-	case MY_MESSAGE_RTC:
-		
+	case MY_MESSAGE_RTC:		
 
 		/* 转换rtc值至北京时间 ，在status窗口已经转换过了，不再转换 */
 		//RTC_TimeCovr(&systmtime);
@@ -408,16 +395,20 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 	
 		/* 转换成字符串 */
 		sprintf(text_buffer,"%02d",systmtime.tm_sec);
-		/* 获取text句柄 */
+		
+    /* 获取text句柄 */
 		hText = WM_GetDialogItem(pMsg->hWin, GUI_ID_TEXT1);
-		/* 输出时间 */
+		
+    /* 输出时间 */
 		TEXT_SetText(hText,text_buffer);
 	
 		/* 转换成字符串 */
 		sprintf(text_buffer,"%04d.%02d.%02d",systmtime.tm_year,systmtime.tm_mon,systmtime.tm_mday);
-		/* 获取text句柄 */
+		
+    /* 获取text句柄 */
 		hText = WM_GetDialogItem(pMsg->hWin, GUI_ID_TEXT3);
-		/* 输出时间 */
+		
+    /* 输出时间 */
 		TEXT_SetText(hText,text_buffer);
 		
 		/* 获取text句柄 */
@@ -507,17 +498,13 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 	
 		break;
 		
-  case WM_PAINT:
+  case WM_PAINT:                                            //重绘背景
     xSize = WM_GetWindowSizeX(pMsg->hWin);
-    ySize = WM_GetWindowSizeY(pMsg->hWin);
-		
-#if 1
+    ySize = WM_GetWindowSizeY(pMsg->hWin);		
+
     GUI_DrawGradientV(0, 0, xSize - 1, ySize - 1, 0xfffff56c, 0xffffffe8);
 		GUI_DrawGradientV(0,0,240,ListWheelPosY,0xffff0d23,0xfffff56c);
-#else
-	
-	GUI_DrawGradientV(0,0,240,ySize,0xffff0d23,0xffffffe8);
-#endif
+
     break;
   default:
     WM_DefaultProc(pMsg);
@@ -534,25 +521,31 @@ static void _cbBkWheel(WM_MESSAGE * pMsg) {
 **********************************************************************
 */
 
-/*********************************************************************
-*
-*       MainTask
-*/
-
+/**
+  * @brief  WFGUI_Time,时间显示
+  * @param  none
+  * @retval none
+  */
 void WFGUI_Time(void) {
   WM_HWIN hBkWheel;
   WM_HWIN hFrameC;								//子窗口句柄
 	WM_HWIN hText;
 	WM_HWIN hButton;
-	WM_HWIN hListWheel;
 	uint16_t ListWheelPosY;
 	
 	HANDLE_LIST *hFrame = hAPPLinkedList_NewNode();
 
-
 	WM_SetCreateFlags(WM_CF_MEMDEV);
 	
-	hFrame->hAPP = FRAMEWIN_CreateEx(0,0,WinPara.xSizeWin,WinPara.ySizeWin,WinPara.hWinMain,WM_CF_SHOW,FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN8,"Time",0);
+	hFrame->hAPP = FRAMEWIN_CreateEx( 0,
+                                    0,
+                                    WinPara.xSizeWin,
+                                    WinPara.ySizeWin,
+                                    WinPara.hWinMain,
+                                    WM_CF_SHOW,
+                                    FRAMEWIN_CF_ACTIVE|FRAMEWIN_CF_MOVEABLE,GUI_ID_FRAMEWIN8,
+                                    "Time",
+                                    0);
 
 	/* 创建窗口按钮 */
   FRAMEWIN_AddCloseButton(hFrame->hAPP, FRAMEWIN_BUTTON_RIGHT, 0);
@@ -564,39 +557,37 @@ void WFGUI_Time(void) {
 	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	//WM_SetCallback(hFrame->hAPP,_cbSDViewWin);
-
-	//	TBD 使用回调函数会出现无法移动框架窗口的情况
 	_pcbOldTimeWin = WM_SetCallback(hFrame->hAPP, _cbTimeWin);	//获取旧的回调函数指针
 	
-	
 	/* 获取框架窗口用户区的句柄 */
-	hFrameC = WM_GetClientWindow(hFrame->hAPP);
+	hFrameC = WM_GetClientWindow(hFrame->hAPP); 
 	
 	ListWheelPosY = WM_GetWindowSizeY(hFrameC)-140;  //140用来显示listwheel，20用来显示button
 
 	//
-  // Create a non transparent background window for the LISTWHEELS
+  // 创建窗口以显示listwheel
   //
 	hBkWheel = WM_CreateWindowAsChild(0, 0, WM_GetWindowSizeX(hFrameC), WM_GetWindowSizeY(hFrameC), hFrameC, WM_CF_SHOW, _cbBkWheel, 0);
 	
 	/* 创建显示当前时间的文本 */
-		//用于显示时分
+	//用于显示时分
 	hText = TEXT_CreateEx(0,ListWheelPosY-40,WM_GetWindowSizeX(hFrameC),40,hBkWheel,WM_CF_SHOW,GUI_TA_LEFT,GUI_ID_TEXT4," Time Setting:");
 	TEXT_SetFont(hText,&GUI_Font20B_ASCII);
 	TEXT_SetTextColor(hText,GUI_RED);
 	TEXT_SetBkColor(hText,GUI_WHITE);
-	//年月日时分秒 注解
+	
+  //年月日时分秒 注解
 	hText = TEXT_CreateEx(0,ListWheelPosY-15,WM_GetWindowSizeX(hFrameC),40,hBkWheel,WM_CF_SHOW,GUI_TA_LEFT,GUI_ID_TEXT5,"  Year    Month  Day   Hour  Min  Sec");
 	TEXT_SetFont(hText,&GUI_Font16B_ASCII);
 	TEXT_SetTextColor(hText,GUI_BLUE);
 	TEXT_SetBkColor(hText,GUI_WHITE);
 
-	
+
+	/* OK 按键 */
 	hButton = BUTTON_CreateEx(WM_GetWindowSizeX(hFrameC)-80,ListWheelPosY-38,40,20,hBkWheel,WM_CF_SHOW,0,GUI_ID_OK);
 	BUTTON_SetText(hButton,"OK");
 	//
-  // Create the LISTWHEELS
+  // 创建ListWheel
   //  
   _CreateListWheel(0,ListWheelPosY,  50, 140, GUI_ID_LISTWHEEL0, _apYear,  GUI_COUNTOF(_apYear),  RIGHT,  GUI_TA_VCENTER | GUI_TA_HCENTER, hBkWheel);
   _CreateListWheel(50,ListWheelPosY, 45, 140, GUI_ID_LISTWHEEL1, _apMonth, GUI_COUNTOF(_apMonth), MIDDLE, GUI_TA_VCENTER | GUI_TA_RIGHT,   hBkWheel);
@@ -605,32 +596,6 @@ void WFGUI_Time(void) {
   _CreateListWheel(165,ListWheelPosY, 35, 140, GUI_ID_LISTWHEEL4, _apNumList, GUI_COUNTOF(_apNumList), MIDDLE, GUI_TA_VCENTER | GUI_TA_RIGHT,   hBkWheel);
   _CreateListWheel(200,ListWheelPosY,  35, 140, GUI_ID_LISTWHEEL5, _apNumList,   GUI_COUNTOF(_apNumList),   LEFT,   GUI_TA_VCENTER | GUI_TA_HCENTER, hBkWheel);
 
-#if 0
-	/* 年 */
-	hListWheel = WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL0);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_year - 1970);
-	
-	/* 月 */
-	hListWheel = WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL1);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_mon - 1);
-	
-	/* 日 */
-	hListWheel = WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL2);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_mday - 1);
-	
-	/* 时 */
-	hListWheel = WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL3);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_hour );
-	
-	/* 分 */
-	hListWheel 		= WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL4);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_min );;
-	
-	/* 秒 */
-	hListWheel = WM_GetDialogItem(hBkWheel, GUI_ID_LISTWHEEL5);
-	LISTWHEEL_MoveToPos(hListWheel,systmtime.tm_sec );
-	
-	#endif
 	
 	GUI_Delay(50);	
 	
@@ -657,6 +622,7 @@ void WFGUI_Time(void) {
 	
 	//给全局变量赋值，这个句柄在rtc中断发送消息时用到
 	WinPara.hWinTime = hBkWheel;
+  
 
 }
 

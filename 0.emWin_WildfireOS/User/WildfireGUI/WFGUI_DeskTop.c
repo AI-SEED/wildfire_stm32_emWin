@@ -435,7 +435,7 @@ static void _cbMainWin(WM_MESSAGE * pMsg)
 }
 
 /**
-  * @brief  ShowTips显示让用户等待的信息
+  * @brief  ShowTips显示让用户等待的信息，在进入App之前使用
   * @param  none
   * @retval none
   */

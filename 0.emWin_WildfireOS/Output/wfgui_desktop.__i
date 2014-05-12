@@ -1,0 +1,5 @@
+-c --cpu Cortex-M3 -D__MICROLIB -g -O1 --apcs=interwork --split_sections -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\Led -I..\..\STemWinLibrary522\inc -I..\..\STemWinLibrary522\Config -I..\..\User\lcd -I..\..\User\SysTick -I..\..\Demo -I..\..\User\usart -I..\..\User\sram -I..\..\User\sdcard -I..\..\ff9 -I..\..\User\WildfireGUI -I..\..\PNGlib -I..\..\User\rtc -I..\..\User\t9py -I..\..\User\ov7725 -I..\..\User\Key -I..\..\User\dht11 -I..\..\User\TimBase -I..\..\User\ds18b20 -I..\..\User\internal_temp -I..\..\User\sim900a
+-I D:\work\keil\ARM\RV31\INC
+-I D:\work\keil\ARM\CMSIS\Include
+-I D:\work\keil\ARM\Inc\ST\STM32F10x
+-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\wfgui_desktop.o --omf_browse ..\..\output\wfgui_desktop.crf --depend ..\..\output\wfgui_desktop.d "..\..\User\WildfireGUI\WFGUI_DeskTop.c"

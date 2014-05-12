@@ -33,14 +33,16 @@
 #include "WFGUI_Common.h"
 
 extern void Touch_MainTask(void);
-//extern void WFGUI_MainTask(void);
+
 /*时间结构体*/
 struct rtc_time systmtime;
-//char path[500]="0:";
-	FATFS fsys;
+
 
 void BSP_Init(void)
 {
+	
+	static FATFS fsys;
+	
 	/* LED 端口初始化 */
 	LED_GPIO_Config();	
 	
@@ -53,18 +55,13 @@ void BSP_Init(void)
 	/* 配置 FSMC Bank1 NOR/SRAM3 */
   FSMC_SRAM_Init();
 	
-	/* Sdio Interrupt Config */
-	//NVIC_Configuration();	
-	
 	/*初始化sd卡*/
 	disk_initialize(0);
 	
 	f_mount(0,&fsys);								//注册文件系统工作区	// TBD 增加sd卡检测
 
-	/* Enable the CRC Module */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);//不知道为什么一定要开crc时钟
 	/*CRC和emWin没有关系，只是他们为了库的保护而做的，这样STemWin的库只能用在ST的芯片上面，别的芯片是无法使用的。 */
-	
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);//不知道为什么一定要开crc时钟	
 	
 	/* 初始化GUI */
 	GUI_Init();
@@ -79,15 +76,11 @@ void BSP_Init(void)
 	
 	EXTI_Key_Config();
 	
-
-	
 	DEBUG("\r\n wildfire ISO board emWin test \r\n");
-
 
 }
 
 
-extern uint8_t key_flag;
 /**
   * @brief  主函数
   * @param  无  
@@ -105,7 +98,6 @@ int main(void)
 	Touch_MainTask();
 	
 	#else	
-	//f_mount(0,&fsys);								//注册文件系统工作区	// TBD 增加sd卡检测
 
 	WFGUI_MainTask();	
 	

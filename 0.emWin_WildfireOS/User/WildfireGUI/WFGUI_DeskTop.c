@@ -30,16 +30,18 @@
 
 /*********************************************************************
 *
-*       Application
+*       STemwin GUI
 */
 #include "ICONVIEW.h"
 #include "TEXT.h"
 #include "DIALOG.h"
 #include "MESSAGEBOX.h"
-#include "ff.h"
 
+/* BSP */
+#include "ff.h"
 #include "bsp_rtc.h"
 
+/* WFGUI */
 #include "WFGUI_Common.h"
 #include "WFGUI_DeskTop.h"
 #include "WFGUI_SDView.h"
@@ -51,12 +53,10 @@
 #include "WFGUI_ImageReader.h"
 #include "WFGUI_Temperature.h"
 #include "WFGUI_TextReader.h"
-
 #include "WFGUI_Keypad.h"
 
 
-
-
+/* 在调试部分功能的时候使用这个宏，可以减少ICON图标，减少下载时间 */
 //#define  GUI_DEVELOP
 
 
@@ -73,21 +73,22 @@
 *
 *       _aBitmapItem
 */
+/*分别是：图标数组，图标标题，图标说明(现在没有用图标说明)*/
 static const BITMAP_ITEM _aBitmapItem[] = {
-  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
-  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
-  {&bmWF_Message, "Message"   , "Read or write message"},
-  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
-//  {&bmWF_Calculator, "Calculator"   , "Calculator"},
-  {&bmWF_Camera,"Camera", "Take a phone"},
-	{&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
-	{&bmWF_Picture,  "Picture" , "Picture viewer"},
-	{&bmWF_Note,    "Note"    , "Write a note"},
+  {&bmWF_Floder, 			"Browser", 		"Use the browser to explore the www"},
+  {&bmWF_Clock,   		"Clock", 			"Adjust current time and date"},
+  {&bmWF_Message,			"Message", 		"Read or write message"},
+  {&bmWF_Phone,  			" Phone", 		"make a telephone call"},
+  {&bmWF_Camera,			"Camera", 		"Take a phone"},
+	{&bmWF_Temperature, "TEMP", 			"Temperature sensor"},
+	{&bmWF_Picture,  		"Picture", 		"Picture viewer"},
+	{&bmWF_Note,    		"Note", 			"Write a note"},
 //	{&bmWF_Map,  "Map" , "Map"},
+//  {&bmWF_Calculator, "Calculator"   , "Calculator"},
   
 };
 
-#else
+#else	//在调试时使用这个数组，减少代码量
 /*********************************************************************
 *
 *       _aBitmapItem
@@ -103,112 +104,13 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 //	{&bmWF_Picture,  "Picture" , "Picture viewer"},
 //	{&bmWF_Map,  "Map" , "Map"},
   {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
-
-
 };
 #endif
 
+/* 全局变量 */
 WIN_PARA WinPara;			//用户使用的窗口额外数据
 SD_FONT SDFont;				//使用外部字体时需要用到的数据结构
 	
-/*********************************************************************
-*
-*       Private routines
-*				私有函数
-*
-**********************************************************************
-*/
-#if 0
-/**
-  * @brief  AppIndexInit,初始化应用索引表
-  * @param  none
-  * @retval none
-  */	
-static void App_IndexInit(void)
-{
-	char i;
-	
-	/* 全初始化为0 */
-	for(i=0;i<GUI_COUNTOF(WinPara.hApp);i++)
-		WinPara.hApp[i] = 0 ;
-
-}
-
-/**
-  * @brief  GetTopAppWin,获取位于最上层的窗口
-  * @param  none
-  * @retval WM_HWIN 窗口句柄,没有活动的app窗口时返回0
-  */	
-WM_HWIN App_GetTopWin(void)
-{
-	char i;
-	
-	/* 检查第一个为0的记录，则前一个元素非0 */
-	for(i=0;i<GUI_COUNTOF(WinPara.hApp);i++)
-	{		
-		if(WinPara.hApp[i] == 0 )
-			break;
-		}
-
-	if(i == 0)
-	{
-		return 0;
-		}
-	else
-		return WinPara.hApp[i-1];	
-
-}
-
-/**
-  * @brief  App_Insert,插入窗口句柄
-  * @param  none
-  * @retval none
-  */	
-void App_Insert(WM_HWIN NewApp)
-{
-	char i;
-	for(i=0;i<GUI_COUNTOF(WinPara.hApp);i++)
-	{		
-		if(WinPara.hApp[i] == 0 )
-			break;
-		}
-	
-	WinPara.hApp[i] = NewApp;		
-
-}
-
-/**
-  * @brief  App_Delete,删除链表里的窗口句柄
-  * @param  none
-  * @retval none
-  */	
-WM_HWIN App_Delete(WM_HWIN NewApp)
-{
-	char i;
-	
-	/* 遍历链表找到句柄的链表索引*/
-	for(i=0;i<GUI_COUNTOF(WinPara.hApp);i++)
-	{		
-		if(WinPara.hApp[i] == NewApp )
-			break;
-		}
-	
-	/*  */	
-	if(WinPara.hApp[i+1] != 0)
-	{
-		for(;i<GUI_COUNTOF(WinPara.hApp);i++)
-		WinPara.hApp[i] = WinPara.hApp[i+1];
-		
-	}		
-	
-	WinPara.hApp[i] = 0;	
-	
-	return NewApp;
-	
-
-}
-#endif
-
 
 /**
   * @brief  _cbBKWin,桌面背景的回调函数
@@ -219,7 +121,7 @@ static void _cbBKWin(WM_MESSAGE * pMsg) {
 
   switch (pMsg->MsgId) {
 
-  case WM_PAINT:	//重绘背景
+  case WM_PAINT:																			//重绘背景
   	GUI_SetColor(GUI_DARKGRAY);
 		GUI_FillRect(0,0,LCD_GetXSize(),LCD_GetYSize());
 
@@ -244,51 +146,48 @@ static void _cbStatusWin(WM_MESSAGE * pMsg)
 	
 	 switch (pMsg->MsgId) {
 		 
-		 case WM_NOTIFY_PARENT:							//通知父窗口
+		 case WM_NOTIFY_PARENT:										//通知父窗口
 			 
 			 	Id    = WM_GetId(pMsg->hWinSrc);      // 控件的ID
 				NCode = pMsg->Data.v;                 // 通知代码
 			 
-			 switch(NCode){
-				 
-				 case WM_NOTIFICATION_RELEASED:
-					 if(Id == GUI_ID_BUTTON0)
+			 if(NCode == WM_NOTIFICATION_RELEASED)	//触摸释放消息	
+				 {				 			
+					 if(Id == GUI_ID_BUTTON0)						//野火Logo按键	
 					 {					 
+						/* 显示消息提示框 */
 						MESSAGEBOX_Create("\n\n  Wildfire OS 1.0  \n\n","About",0);
-						 
 						 					
 					 } 
-					 else if(Id == GUI_ID_TEXT0)
+					 else if(Id == GUI_ID_TEXT0)				//时间文本框
 					 {					
-						 		
+						/* 执行WFGUI_Time应用 */ 		
 						WFGUI_Time();
-						}		
-					 
-					 break;
-				 
-				 default:
-					 break;
-
-							}
+						}							 
+			
+					}
 							
 			 
 				break;
 		 
 		 
-			case WM_PAINT:	//重绘背景
+			case WM_PAINT:													//重绘背景
 				GUI_SetColor(GUI_BLACK);
 				GUI_FillRect(0,0,WinPara.xSizeLCD ,WinPara.yPosWin);
 			
 			break;
 			
-			case MY_MESSAGE_RTC:		
+			case MY_MESSAGE_RTC:										//处理时间显示的信息，每秒钟修改一次时间
 				
-				/* 获取text句柄 */
-				hText = WM_GetDialogItem(pMsg->hWin, GUI_ID_TEXT0);
+				/* 获取text句柄 */      
+        hText = WM_GetDialogItem(pMsg->hWin, GUI_ID_TEXT0);
+      
 				/* 转换rtc值至北京时间 */
 				RTC_TimeCovr(&systmtime);
+      
 				/* 转换成字符串 */
 				sprintf(text_buffer,"%02d:%02d:%02d",systmtime.tm_hour,systmtime.tm_min,systmtime.tm_sec);
+      
 				/* 输出时间 */
 				TEXT_SetText(hText,text_buffer);
 				break;
@@ -308,11 +207,9 @@ static void _cbStatusWin(WM_MESSAGE * pMsg)
   */
 static void _cbIndexWin(WM_MESSAGE * pMsg)
 {
-	int Id,NCode;
-	WM_HWIN hItem;			
-	
+
 	 switch (pMsg->MsgId) {
-		 case WM_PAINT:
+		 case WM_PAINT:										//重绘背景	
 			 
 		 		GUI_SetColor(GUI_BLACK);			
 				GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin) ,WM_GetWindowSizeY(pMsg->hWin));
@@ -343,8 +240,7 @@ static void _cbIndexWin(WM_MESSAGE * pMsg)
 						}
 					}
 				}		
-			 break;	 
-				
+			 break;	 		
 	 
 
 		 
@@ -367,13 +263,13 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 	
 	 switch (pMsg->MsgId) {
 		 
-		 case WM_PAINT:
+		 case WM_PAINT:										  //重绘窗口	
 			GUI_SetColor(GUI_BLACK);			
 			GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin) ,WM_GetWindowSizeY(pMsg->hWin));
 		 
 			 break;
 		 
-		 case WM_CREATE:
+		 case WM_CREATE:										//创建窗口
 			
 		 /*返回键*/
 			hItem = BUTTON_CreateEx(0,0,40, 20, 
@@ -384,7 +280,7 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 			 break;
 		 
 		 
-		 case WM_NOTIFY_PARENT:
+		 case WM_NOTIFY_PARENT:							//处理子窗口消息	
 				Id    = WM_GetId(pMsg->hWinSrc);
 				NCode = pMsg->Data.v;
 			
@@ -394,21 +290,19 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
 					{
 				
 							HANDLE_LIST *hAPPOnTop;
+            
 							/* 获取最上层的窗口句柄 */
 							hAPPOnTop =	hAPPLinkedList_GetAppTop();
 							if(hAPPOnTop != NULL)
 							{
-								WM_DeleteWindow(hAPPOnTop->hAPP);	//	关闭窗口
-							//	hAPPLinkedList_Del(&hAPPOnTop);		//	从链表删除结点
+								WM_DeleteWindow(hAPPOnTop->hAPP);			//	关闭窗口
 								
 							}						
 					
 						
 						}
-						else if(Id == GUI_ID_BUTTON1)						
+						else if(Id == GUI_ID_BUTTON1)							//button1可以制作home键，现在没有实现			
 						{			
-//							hItem = WM_GetDialogItem(WinPara.hWinMain,GUI_ID_ICONVIEW0 );
-//							WM_DeleteWindow(hItem);
 
 						}
 
@@ -430,24 +324,19 @@ static void _cbButtonWin(WM_MESSAGE * pMsg)
   */
 static void _cbCtrlWin(WM_MESSAGE * pMsg)
 {
-	int Id,NCode;
 	WM_HWIN hItem;	
 	WM_HWIN hItemNext;	
 	
-		 switch (pMsg->MsgId) {
+		 switch (pMsg->MsgId) {			 
 			 
-			 
-			case WM_PAINT:	//重绘背景
-				
+			case WM_PAINT:	                             //重绘背景				
 			
 				GUI_SetColor(GUI_BLACK);			
-				GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin) ,WM_GetWindowSizeY(pMsg->hWin));
-				
-			
+				GUI_FillRect(0,0,WM_GetWindowSizeX(pMsg->hWin) ,WM_GetWindowSizeY(pMsg->hWin));			
 			break;
 			
 			case MY_MESSAGE_CTRLCHANGE:
-				if(hAPPLinkedList_GetAppTop()==NULL)			//没有app窗口，显示桌面索引
+				if(hAPPLinkedList_GetAppTop()==NULL)			//如果没有app窗口，则控制栏显示桌面索引
 				{
 					hItem = WM_GetFirstChild(WinPara.hWinCtrl);
 					hItemNext = WM_GetNextSibling(hItem);
@@ -458,8 +347,7 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
 						/* 显示index窗口，隐藏button窗口 */
 						WM_ShowWindow(hItem);
 						WM_HideWindow(hItemNext);
-						//GUI_Delay(1);
-						WM_Paint(hItem);				//要重绘索引窗口，更新索引
+						WM_Paint(hItem);								//要重绘索引窗口，更新索引
 					 
 					}
 					else if(WM_GetCallback(hItemNext) == _cbIndexWin  && WM_GetCallback(hItem) == _cbButtonWin)
@@ -467,14 +355,13 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
 						/* 显示index窗口，隐藏button窗口 */
 						WM_ShowWindow(hItemNext);
 						WM_HideWindow(hItem);
-						//GUI_Delay(1);
 
-						WM_Paint(hItemNext);		//要重绘索引窗口，更新索引
+						WM_Paint(hItemNext);					//要重绘索引窗口，更新索引
 
 					}	
 
 				}
-			else											//存在app窗口，显示控制按钮索引
+			else																//如果存在app窗口，显示控制按钮索引
 				{		
 					hItem = WM_GetFirstChild(WinPara.hWinCtrl);
 					hItemNext = WM_GetNextSibling(hItem);
@@ -485,23 +372,17 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
 					 /* 显示button窗口，隐藏index窗口 */
 						WM_ShowWindow(hItemNext);
 						WM_HideWindow(hItem);
-					 //					 GUI_Delay(1);
-
-						//WM_Paint(hItemNext);
 					}
 					else if(WM_GetCallback(hItemNext) == _cbIndexWin  && WM_GetCallback(hItem) == _cbButtonWin)
 					{
 						/* 显示button窗口，隐藏index窗口 */
 						WM_ShowWindow(hItem);
 						WM_HideWindow(hItemNext);
-					//						 GUI_Delay(1);
-
-						//WM_Paint(hItem);
 
 					}	
 					
 
-					}
+				}
 					
 				break;				
 	
@@ -522,51 +403,27 @@ static void _cbCtrlWin(WM_MESSAGE * pMsg)
   */
 static void _cbMainWin(WM_MESSAGE * pMsg)
 {
-	WM_HWIN hWin;
-	
-	WM_HWIN    hItem;
-  int        NCode;
-  int        Id;
-  int        Sel;
-	static char  state = 0;
-	
-	WM_MOTION_INFO * pInfo;
-	
-	hWin = pMsg->hWin;	
 
 	switch (pMsg->MsgId) {
 			 
 			 case WM_NOTIFY_PARENT:
 
-				break;				//NOTIFYPARENT
+				break;											
 			 
-		case WM_MOTION_INIT:
-			
-			pInfo = (WM_MOTION_INFO *)pMsg->Data.p;
-				 if (pInfo) {
-						switch (pInfo->Cmd) {
-							case WM_MOTION_INIT:
-							pInfo->SnapX = 240;		//像素对齐
-							pInfo->SnapY = 0;
-							pInfo->Period = 1;
-							break;
-							}
-				 }
-				
-			break;
 				 
-		case MY_MESSAGE_SNAPSHOT:			
-
+		case MY_MESSAGE_SNAPSHOT:			  //处理截图消息
+       
+        /* 调用截图应用 */
 				WFGUI_Snapshot() ;
 	
 				break;
 		
 	 
-		case WM_PAINT:	//重绘背景
+		case WM_PAINT:	              //重绘背景
 				GUI_SetColor(GUI_BLACK);
 				GUI_FillRect(0,0,WinPara.xSizeWin ,WinPara.ySizeWin);
 
-			break;				//WM_PAINT
+			break;				      
 		
 		 
 			default:		
@@ -990,15 +847,14 @@ static void CreateFont(SD_FONT *ExFont)
 {
 	FRESULT res;
 
-		//0:/WF_OS/FONT/HuaWen17.xbf
   res = f_open(&ExFont->hFontFile,XBF_FONT_PATH,FA_READ|FA_OPEN_EXISTING);
 	if (res == FR_OK) {
 		
 	 /* 成功打开字库文件 */
-	GUI_XBF_CreateFont(	&ExFont->XFont,             					// 指向创建得的字体数据结构存储位置
-											&ExFont->XBF_Data,         					// 指向XBF_DATA数据结构
-											GUI_XBF_TYPE_PROP_AA2_EXT, 	// 要创建的字体类型
-											_cbGetData,        					// 读取字库文件的回调函数
+	GUI_XBF_CreateFont(	&ExFont->XFont,             						// 指向创建得的字体数据结构存储位置
+											&ExFont->XBF_Data,         							// 指向XBF_DATA数据结构
+											GUI_XBF_TYPE_PROP_AA2_EXT, 							// 要创建的字体类型
+											_cbGetData,        											// 读取字库文件的回调函数
 											&ExFont->hFontFile);            				// 指向字库文件的文件索引
 		
 	/* 设置GUI字体 */
@@ -1042,10 +898,7 @@ static void SetDefaultSkin(void)
 	
 	/* 设置默认字体 */
 	TEXT_SetDefaultFont(&SDFont.XFont);
-	
-	//TEXT_SetDefaultFont(GUI_FONT_8X16);
-	//BUTTON_SetDefaultFont(GUI_FONT_8X16);
-	
+
 	/* 设置framwin  */
 	FRAMEWIN_SetDefaultTitleHeight(20);					//标题栏高度
 	FRAMEWIN_SetDefaultFont(GUI_FONT_8X16);			//默认字体
@@ -1070,28 +923,22 @@ static void CreatStatusWin(void)
 																							WinPara.yPosWin,	
 																							WM_HBKWIN, WM_CF_SHOW | WM_CF_MEMDEV, _cbStatusWin, sizeof(WIN_PARA *)
 																						);
-	//WM_EnableMemdev(WinPara.hWinStatus);
 	
-
-	
+	/* 顶部的 "wildfire OS "文本 */
 	hText = TEXT_CreateEx(0, 0, WinPara.xSizeWin , 20, WinPara.hWinStatus, WM_CF_SHOW, GUI_TA_HCENTER|TEXT_CF_VCENTER, GUI_ID_TEXT1, "Wildfire OS");
   TEXT_SetFont(hText, GUI_FONT_16B_ASCII);
   TEXT_SetTextColor(hText, 0xFF4040);
 	
+	/* 状态栏的时间显示文本 */
 	hText = TEXT_CreateEx(WinPara.xSizeLCD-55,5,55,20,WinPara.hWinStatus,WM_CF_SHOW,TEXT_CF_LEFT,GUI_ID_TEXT0,"");
 	TEXT_SetBkColor(hText,GUI_INVALID_COLOR);
 	TEXT_SetTextColor(hText,GUI_WHITE);
 	TEXT_SetFont(hText,GUI_FONT_13B_ASCII);
 	
+	/* 野火Logo 按钮 */
 	hButton = BUTTON_CreateEx(2,0,40,20,WinPara.hWinStatus,WM_CF_SHOW,0,GUI_ID_BUTTON0);
 	BUTTON_SetBitmap(hButton,BUTTON_BI_UNPRESSED,&bmWF_Logo);
-	BUTTON_SetBitmap(hButton,BUTTON_BI_PRESSED,&bmWF_LogoPr);
-	
-
-//	sprintf(text_buffer,"%2d:%2d:%2d",systmtime.tm_hour,systmtime.tm_min,systmtime.tm_sec);
-//	printf("text %s",text_buffer);
-//	TEXT_SetText(hText,text_buffer);
-//	WM_SetUserData(WinPara.hWinStatus, &pPara, sizeof(WIN_PARA *));//设置窗口的用户数据
+	BUTTON_SetBitmap(hButton,BUTTON_BI_PRESSED,&bmWF_LogoPr);	
 
 }
 
@@ -1115,31 +962,18 @@ static void CreatCtrlWin(void)
 																							WM_HBKWIN, WM_CF_SHOW | WM_CF_MEMDEV, _cbCtrlWin, sizeof(WIN_PARA *)
 																						);
 	
-	
-
-	
-	
-	/* 创建索引窗口 */
+	/* 创建索引窗口 (以小圆点表示当前的图标页面)*/
 	WM_CreateWindowAsChild(0,0,WM_GetWindowSizeX(WinPara.hWinCtrl),WM_GetWindowSizeY(WinPara.hWinCtrl),
 													WinPara.hWinCtrl,WM_CF_SHOW,_cbIndexWin,0);
 													
-	/* 创建索引窗口 */
+	/* 创建按键button窗口(该button在应用程序状态下 会显示返回按钮) */
 	hButtonWin = WM_CreateWindowAsChild(0,0,WM_GetWindowSizeX(WinPara.hWinCtrl),WM_GetWindowSizeY(WinPara.hWinCtrl),
-													WinPara.hWinCtrl,WM_CF_SHOW,_cbButtonWin,0);	
+													WinPara.hWinCtrl,WM_CF_SHOW,_cbButtonWin,0);
+	/* 默认隐藏button窗口 */	
 	GUI_Delay(10);	
 	WM_HideWindow(hButtonWin);
 	GUI_Delay(10);
 													
-												
-
-
-	
-	/* home 键 */
-//	hButton = BUTTON_CreateEx(100,0,40, 20, 
-//                                WinPara.hWinCtrl, WM_CF_SHOW | WM_CF_HASTRANS, 0, GUI_ID_BUTTON1);
-//	
-//	BUTTON_SetText(hButton, "o");
-
 }
 
 
@@ -1150,20 +984,14 @@ static void CreatCtrlWin(void)
   */
 static void CreatMainWin(void)
 {
-	WM_HWIN  hWin;
-  unsigned i;
-	
 	
 	WinPara.hWinMain = WM_CreateWindowAsChild(
 																							WinPara.xPosWin ,											
 																							WinPara.yPosWin ,	//位置
 																							WinPara.xSizeWin,
 																							WinPara.ySizeWin,	//底部剩余宽度
-																							WM_HBKWIN, WM_CF_SHOW | WM_CF_MEMDEV/*|WM_CF_MOTION_X*/, _cbMainWin, sizeof(WIN_PARA *)
+																							WM_HBKWIN, WM_CF_SHOW | WM_CF_MEMDEV, _cbMainWin, sizeof(WIN_PARA *)
 																						);	
-	//WM_EnableMemdev(WinPara.hWinMain);
-	
-//	WM_SetUserData(WinPara.hWinMain, &pPara, sizeof(WIN_PARA *));//设置窗口的用户数据
 		/* 创建icon图标窗口 */
 	 WM_CreateWindowAsChild(	0 ,											
 														0 ,	//位置
@@ -1173,8 +1001,7 @@ static void CreatMainWin(void)
 														WM_CF_SHOW | WM_CF_MEMDEV|WM_CF_MOTION_X,
 														_cbIconWin,
 														0
-														);
-												
+														);							
 																	
 	
 
@@ -1183,7 +1010,6 @@ static void CreatMainWin(void)
 
 
 
-//extern void JPEGReader( char * file_name);
 /**
   * @brief  CreatDeskTop，创建gui桌面
   * @param  none
@@ -1230,9 +1056,6 @@ static void CreatDeskTop(void)
 **********************************************************************
 */
 
-//extern void JPEGReader( char * file_name); 
-//extern uint8_t flag ;
-//extern char jpgname[150] ;
 /**
   * @brief  WFGUI_MainTask,WFGUI主函数
   * @param  none

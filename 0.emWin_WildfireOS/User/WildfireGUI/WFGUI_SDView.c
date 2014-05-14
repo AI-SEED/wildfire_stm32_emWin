@@ -332,7 +332,8 @@ static FRESULT scan_files (char* path,char* file_name,FIL *hFile,WM_HWIN hTree, 
 							else																																		//不创建目录树
 							{
 								sprintf(file_name, "%s/%s", path,fn); 	
-								
+								//DEBUG("\r\n file_name = %s \r\n",file_name);
+                
                 //存储文件名到filelist(含路径)										
 								res = f_lseek (hFile, (*fileNum)*FILE_NAME_LEN);  
 								res = f_write (hFile, file_name, FILE_NAME_LEN, &rw_num);						

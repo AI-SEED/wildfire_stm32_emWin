@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-#define __DEBUG 	//开启串口调试
+//#define __DEBUG 	//开启串口调试
 
 #ifdef __DEBUG
 #define DEBUG(format,...)	printf("File:"__FILE__",Line:%03d:"format"\n",__LINE__,##__VA_ARGS__) 

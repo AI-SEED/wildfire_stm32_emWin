@@ -391,6 +391,9 @@ static void  ImageReader_Raw(char *file_name ,WM_HWIN hParent)
 	
   /* 打开图片文件 */
 	fres = f_open(&hFile,file_name,  FA_READ|FA_OPEN_EXISTING| FA_OPEN_ALWAYS );
+    if(fres != FR_OK)
+       return ; 
+  
 	DEBUG("\r\n open extsting fres = %d",fres); 	
 	
   /* 获取图片大小 */
@@ -572,6 +575,12 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
                 /* 显示上一张图片 */
 							 Image_Display(--ImageIndex,hWin);
 						 }
+            else
+            {
+              /* 显示原来的图片 */
+              Image_Display(ImageIndex,hWin);
+
+            }
 						 					
 					 } 
 					 else if(Id == GUI_ID_BUTTON1)      //下一张图片按钮
@@ -581,6 +590,12 @@ static void _cbImageAPPWin(WM_MESSAGE * pMsg)
 								/* 显示下一张图片 */
 								Image_Display(++ImageIndex,hWin);
 							}
+              else
+              {
+                /* 显示原来的图片 */
+								Image_Display(ImageIndex,hWin);
+  
+              }
 						}
 						 
 				 }

@@ -1,30 +1,19 @@
-/*********************************************************************
-*                SEGGER MICROCONTROLLER SYSTEME GmbH                 *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2007  SEGGER Microcontroller Systeme GmbH        *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-** emWin V4.12 - Graphical user interface for embedded applications **
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : SKINNING_Notepad.c
-Purpose     : Animated notepad using skinning and window effects
-Requirements: WindowManager - (x)
-              MemoryDevices - (x)
-              AntiAliasing  - ( )
-              VNC-Server    - ( )
-              PNG-Library   - ( )
-              TrueTypeFonts - ( )
-----------------------------------------------------------------------
-*/
+/**
+  ******************************************************************************
+  * @file    WFGUI_Keypad.c
+  * @author  fire
+  * @version V1.0
+  * @date    2013-xx-xx
+  * @brief   输入法程序
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火 iSO STM32 开发板 
+  * 论坛    :http://www.chuxue123.com
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
 
 #include <stddef.h>
 #include "DIALOG.h"

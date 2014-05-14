@@ -1,29 +1,19 @@
-
-
-
-
-
-	/*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2013  SEGGER Microcontroller GmbH & Co. KG       *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-** emWin V5.22 - Graphical user interface for embedded applications **
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : WIDGET_ListWheel.c
-Purpose     : Demonstrates using the LISTWHEEL widget
-----------------------------------------------------------------------
-*/
+/**
+  ******************************************************************************
+  * @file    WFGUI_Time.c
+  * @author  fire
+  * @version V1.0
+  * @date    2013-xx-xx
+  * @brief   时钟应用
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火 iSO STM32 开发板 
+  * 论坛    :http://www.chuxue123.com
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
 
 #include <stddef.h>
 #include <stdlib.h>

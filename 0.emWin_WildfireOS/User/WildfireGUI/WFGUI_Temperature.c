@@ -1,24 +1,19 @@
-/*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2013  SEGGER Microcontroller GmbH & Co. KG       *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-** emWin V5.22 - Graphical user interface for embedded applications **
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : WIDGET_Graph.c
-Purpose     : Demonstrates the use of the GRAPH widget
-----------------------------------------------------------------------
-*/
+/**
+  ******************************************************************************
+  * @file    WFGUI_Temperature.c
+  * @author  fire
+  * @version V1.0
+  * @date    2013-xx-xx
+  * @brief   实时温度显示器
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火 iSO STM32 开发板 
+  * 论坛    :http://www.chuxue123.com
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
 
 #include <stdlib.h>
 #include <string.h>

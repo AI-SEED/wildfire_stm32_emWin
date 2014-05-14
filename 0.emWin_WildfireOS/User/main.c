@@ -61,7 +61,7 @@ void BSP_Init(void)
 	f_mount(0,&fsys);								//注册文件系统工作区	// TBD 增加sd卡检测
 
 	/*CRC和emWin没有关系，只是他们为了库的保护而做的，这样STemWin的库只能用在ST的芯片上面，别的芯片是无法使用的。 */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);//不知道为什么一定要开crc时钟	
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);
 	
 	/* 初始化GUI */
 	GUI_Init();

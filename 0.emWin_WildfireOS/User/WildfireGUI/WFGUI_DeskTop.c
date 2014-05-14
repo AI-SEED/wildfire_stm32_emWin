@@ -54,6 +54,7 @@
 #include "WFGUI_Temperature.h"
 #include "WFGUI_TextReader.h"
 #include "WFGUI_Keypad.h"
+#include "WFGUI_UserAPP.h" 
 
 
 /* 在调试部分功能的时候使用这个宏，可以减少ICON图标，减少下载时间 */
@@ -73,20 +74,30 @@
 *
 *       _aBitmapItem
 */
-/*分别是：图标数组，图标标题，图标说明(现在没有用图标说明)*/
+/*第一页的图标。数组元素分别是：图标数组，图标标题，图标说明(现在没有用图标说明)*/
 static const BITMAP_ITEM _aBitmapItem[] = {
   {&bmWF_Floder, 			"Browser", 		"Use the browser to explore the www"},
   {&bmWF_Clock,   		"Clock", 			"Adjust current time and date"},
-  {&bmWF_Message,			"Message", 		"Read or write message"},
-  {&bmWF_Phone,  			" Phone", 		"make a telephone call"},
-  {&bmWF_Camera,			"Camera", 		"Take a phone"},
 	{&bmWF_Temperature, "TEMP", 			"Temperature sensor"},
 	{&bmWF_Picture,  		"Picture", 		"Picture viewer"},
 	{&bmWF_Note,    		"Note", 			"Write a note"},
-//	{&bmWF_Map,  "Map" , "Map"},
-//  {&bmWF_Calculator, "Calculator"   , "Calculator"},
-  
+  {&bmWF_Message,			"Message", 		"Read or write message"},
+  {&bmWF_Phone,  			"Phone",      "make a telephone call"},
+  {&bmWF_Camera,			"Camera", 		"Take a phone"},
 };
+
+
+/*第二页的图标。数组元素分别是：图标数组，图标标题，图标说明(现在没有用图标说明)*/
+static const BITMAP_ITEM _aBitmapItem2[] = {
+	{&bmWF_Map,         "Map" ,       "Map"},
+  {&bmWF_Calculator,  "Calculator", "Calculator"},
+  {&bmWFGUI_UserApp,  "UserAPP",    "UserAPP"}, 
+
+};
+
+
+
+
 
 #else	//在调试时使用这个数组，减少代码量
 /*********************************************************************
@@ -94,16 +105,24 @@ static const BITMAP_ITEM _aBitmapItem[] = {
 *       _aBitmapItem
 */
 static const BITMAP_ITEM _aBitmapItem[] = {
-//  {&bmWF_Floder, "Browser" , "Use the browser to explore the www"},
-//  {&bmWF_Clock,   "Clock"   , "Adjust current time and date"},
-//	{&bmWF_Message, "Message"   , "Read or write message"},
-//  {&bmWF_Phone,  " Phone"  , "make a telephone call"},
-//  {&bmWF_Note,    "Note"    , "Write a note"},
-//  {&bmWF_Calculator, "Calculator"   , "Calculator"},
-//  {&bmWF_Camera,"Camera", "Take a phone"},
-//	{&bmWF_Picture,  "Picture" , "Picture viewer"},
-//	{&bmWF_Map,  "Map" , "Map"},
-  {&bmWF_Temperature,  " TEMP"  , "Temperature sensor"},
+//  {&bmWF_Floder, 			"Browser", 		"Use the browser to explore the www"},
+//  {&bmWF_Clock,   		"Clock", 			"Adjust current time and date"},
+	{&bmWF_Temperature, "TEMP", 			"Temperature sensor"},
+//	{&bmWF_Picture,  		"Picture", 		"Picture viewer"},
+//	{&bmWF_Note,    		"Note", 			"Write a note"},
+//  {&bmWF_Message,			"Message", 		"Read or write message"},
+//  {&bmWF_Phone,  			"Phone",      "make a telephone call"},
+//  {&bmWF_Camera,			"Camera", 		"Take a phone"},
+//	{&bmWF_Map,         "Map" ,       "Map"},
+//  {&bmWF_Calculator,  "Calculator", "Calculator"},
+};
+
+/*第二页的图标。数组元素分别是：图标数组，图标标题，图标说明(现在没有用图标说明)*/
+static const BITMAP_ITEM _aBitmapItem2[] = {
+//	{&bmWF_Map,         "Map" ,       "Map"},
+//  {&bmWF_Calculator,  "Calculator", "Calculator"},
+//  {&bmWFGUI_UserApp,  "UserAPP",    "UserAPP"}, 
+
 };
 #endif
 
@@ -498,9 +517,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 				/* 设置当前索引 */	
 				WinPara.ctr_index = 0;
 				
-				/* 标记桌面窗口现在在最前 */
-				//WinPara.isDesktop = 1;
-					
+				#if 0
 				/* 显示图标 */
 				for(i = 0,j = 0;i<VIRTUAL_WIN_NUM && j < GUI_COUNTOF(_aBitmapItem) ;i++ )
 				{				
@@ -516,6 +533,33 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 					}		
 				
 				}
+        
+        #else
+          /* 显示第一个图标页 */
+          hWin = WM_GetDialogItem(pMsg->hWin,GUI_ID_ICONVIEW0);
+					
+					/*
+					* 添加图标到图标控件
+					*/
+					for (j = 0 ; j < ICON_PAGE_NUM  && j < GUI_COUNTOF(_aBitmapItem); j++)
+					{    
+
+						ICONVIEW_AddBitmapItem(hWin, _aBitmapItem[j].pBitmap, _aBitmapItem[j].pText);
+					}		
+          
+          
+          /* 显示第二个图标页 */
+          hWin = WM_GetDialogItem(pMsg->hWin,GUI_ID_ICONVIEW1);
+					
+					/*
+					* 添加图标到图标控件
+					*/
+					for (j = 0 ; j < ICON_PAGE_NUM  && j < GUI_COUNTOF(_aBitmapItem2); j++)
+					{    
+
+						ICONVIEW_AddBitmapItem(hWin, _aBitmapItem2[j].pBitmap, _aBitmapItem2[j].pText);
+					}		
+        #endif
 		break;
 
 		case WM_NOTIFY_PARENT:
@@ -555,8 +599,36 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 													WFGUI_Time();
 											
 												break;	
+                      
+                     case 2:
+                          
+                          GUI_Delay(500);										
+
+                          ShowTips(pMsg->hWin);					//提示让用户等待
+                        
+                          WFGUI_Temperature();
+                          
+                        break;
+                      
+                      case 3:
+                          GUI_Delay(500);										
+
+                          ShowTips(pMsg->hWin);					//提示让用户等待
+                        
+                          WFGUI_ImageReader();
+                        
+                      break;
+                    
+                      case 4:
+                          GUI_Delay(500);										
+
+                          ShowTips(pMsg->hWin);					//提示让用户等待
+                        
+                          WFGUI_TextReader();
+                        
+                      break;
 											
-											case 2:
+											case 5:
 												GUI_Delay(500);								//短暂延时以显示触摸效果
 
 												ShowTips(pMsg->hWin);					//提示让用户等待
@@ -566,7 +638,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 											
 												break;
 											
-											case 3:
+											case 6:
 												
 												GUI_Delay(500);								//短暂延时以显示触摸效果										
 
@@ -578,7 +650,7 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 											
 											break;
 										
-											case 4:
+											case 7:
 												
 												GUI_Delay(500);										
 
@@ -587,49 +659,10 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 												WFGUI_Camera();
 												
 											break;
-											
-										case 5:
-												
-												GUI_Delay(500);										
-
-												ShowTips(pMsg->hWin);					//提示让用户等待
-											
-												WFGUI_Temperature();
-												
-											break;
-										
-										case 6:
-												GUI_Delay(500);										
-
-												ShowTips(pMsg->hWin);					//提示让用户等待
-											
-												WFGUI_ImageReader();
-											
-										break;
-									
-										case 7:
-												GUI_Delay(500);										
-
-												ShowTips(pMsg->hWin);					//提示让用户等待
-											
-												WFGUI_TextReader();
-											
-										break;
-											
-											
-												
 										
 																				
 #else
-//								case 0:
 
-//									GUI_Delay(500);								//短暂延时以显示触摸效果
-
-//									ShowTips(pMsg->hWin);					//提示让用户等待
-//							
-//									SDView_MainTask();	
-
-//								break;
 								
 								case 0:
 
@@ -672,12 +705,15 @@ static void _cbIconWin(WM_MESSAGE * pMsg)
 						switch(Sel)
 						{
 							case 0:
+              case 1:
+              case 2:
 								
 									GUI_Delay(500);										
 
 									ShowTips(pMsg->hWin);					//提示让用户等待
 								
-									WFGUI_Temperature();
+                  WFGUI_UserAPP();
+
 								break;
 							
 							

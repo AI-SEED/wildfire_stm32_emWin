@@ -742,6 +742,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\WildfireGUI\WFGUI_APPLinkedList.c</FilePath>
             </File>
+            <File>
+              <FileName>WFGUI_UserAPP.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\WildfireGUI\WFGUI_UserAPP.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

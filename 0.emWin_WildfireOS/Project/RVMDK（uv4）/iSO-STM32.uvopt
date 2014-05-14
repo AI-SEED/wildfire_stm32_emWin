@@ -739,8 +739,8 @@
       <Focus>0</Focus>
       <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>82</TopLine>
-      <CurrentLine>94</CurrentLine>
+      <TopLine>61</TopLine>
+      <CurrentLine>33</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -1105,10 +1105,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>18</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>697</TopLine>
+      <CurrentLine>725</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_DeskTop.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_DeskTop.c</FilenameWithoutPath>
@@ -1121,10 +1121,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>33</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1826</TopLine>
+      <CurrentLine>7</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Icon.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Icon.c</FilenameWithoutPath>
@@ -1169,10 +1169,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>14</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>366</TopLine>
-      <CurrentLine>395</CurrentLine>
+      <TopLine>177</TopLine>
+      <CurrentLine>189</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_ImageReader.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_ImageReader.c</FilenameWithoutPath>
@@ -1251,8 +1251,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>15</TopLine>
+      <CurrentLine>18</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Camera.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Camera.c</FilenameWithoutPath>
@@ -1281,10 +1281,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>31</ColumnNumber>
+      <ColumnNumber>9</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>352</TopLine>
+      <CurrentLine>361</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\WildfireGUI\WFGUI_Temperature.c</PathWithFileName>
       <FilenameWithoutPath>WFGUI_Temperature.c</FilenameWithoutPath>
@@ -1307,6 +1307,22 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>6</GroupNumber>
+      <FileNumber>66</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <ColumnNumber>172</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>1</TopLine>
+      <CurrentLine>65</CurrentLine>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\User\WildfireGUI\WFGUI_UserAPP.c</PathWithFileName>
+      <FilenameWithoutPath>WFGUI_UserAPP.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -1317,7 +1333,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>66</FileNumber>
+      <FileNumber>67</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1333,7 +1349,7 @@
     </File>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>67</FileNumber>
+      <FileNumber>68</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1349,7 +1365,7 @@
     </File>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>68</FileNumber>
+      <FileNumber>69</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1373,7 +1389,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>69</FileNumber>
+      <FileNumber>70</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1389,7 +1405,7 @@
     </File>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>70</FileNumber>
+      <FileNumber>71</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1405,7 +1421,7 @@
     </File>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>71</FileNumber>
+      <FileNumber>72</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1421,7 +1437,7 @@
     </File>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>72</FileNumber>
+      <FileNumber>73</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1437,7 +1453,7 @@
     </File>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>73</FileNumber>
+      <FileNumber>74</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1461,7 +1477,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>74</FileNumber>
+      <FileNumber>75</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1485,7 +1501,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>75</FileNumber>
+      <FileNumber>76</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -1509,7 +1525,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>76</FileNumber>
+      <FileNumber>77</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>

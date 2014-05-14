@@ -28,10 +28,10 @@
 #define GUI_ID_LISTWHEEL6 (GUI_ID_USER + 11)
 #define GUI_ID_FRAMEWIN8 	(GUI_ID_USER+12)
 
-#define GUI_ID_WINDOW0 	(GUI_ID_USER+13)
+#define GUI_ID_WINDOW0 	  (GUI_ID_USER+13)
 
 #define GUI_ID_FRAMEWIN9 	(GUI_ID_USER+14)
-#define GUI_ID_FRAMEWIN10 	(GUI_ID_USER+15)
+#define GUI_ID_FRAMEWIN10 (GUI_ID_USER+15)
 
 /* icon的页数 */
 #define VIRTUAL_WIN_NUM					(2)
@@ -121,6 +121,8 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Camera;			//摄像头
 extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Picture;			//图片浏览器
 extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Map;					//地图
 extern GUI_CONST_STORAGE GUI_BITMAP bmWF_Temperature;	//温度计
+extern GUI_CONST_STORAGE GUI_BITMAP bmWFGUI_UserApp;  //用户图标
+
 
 
 

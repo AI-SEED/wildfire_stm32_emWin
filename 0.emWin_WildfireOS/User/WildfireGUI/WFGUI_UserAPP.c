@@ -1,15 +1,12 @@
-#include "WFGUI_Camera.h"
-#include "dialog.h"
-#include "bsp_ov7725.h"
-
+#include "WFGUI_UserAPP.h"
 
 
 /**
-  * @brief  _cbCamera,摄像头回调函数
+  * @brief  _cbUserAPP,用户回调函数
   * @param  none
   * @retval none
   */
-static void _cbCamera(WM_MESSAGE * pMsg)
+static void _cbUserAPP(WM_MESSAGE * pMsg)
 {
 	
 	WM_HWIN hWin;
@@ -26,7 +23,7 @@ static void _cbCamera(WM_MESSAGE * pMsg)
 		break;
   
   case WM_DELETE:
-    /* 获取app句柄对应的链表结点 */
+     /* 获取app句柄对应的链表结点 */
 		appNode = hAPPLinkedList_GetAppNode(pMsg->hWin);
 		if(appNode != NULL)
 		{
@@ -57,34 +54,31 @@ static void _cbCamera(WM_MESSAGE * pMsg)
 
 
 
-
 /**
-  * @brief  WFGUI_Camera,摄像头
+  * @brief  WFGUI_UserAPP,用户APP
   * @param  none
   * @retval none
   */
-void WFGUI_Camera(void)
+void WFGUI_UserAPP(void)
 {
-	/*提示消息：该应用正加班加点设计中*/
-	const char tips[] = {0xE8,0xAF,0xA5,0xE5,0xBA,0x94,0xE7,0x94,0xA8,0xE6,0xAD,0xA3,0xE5,0x8A,0xA0,0xE7,0x8F,0xAD,0xE5,0x8A,0xA0,0xE7,0x82,0xB9,0xE8,0xAE,0xBE,0xE8,0xAE,0xA1,0xE4,0xB8,0xAD,0x20};
-	HANDLE_LIST *hCamera = hAPPLinkedList_NewNode();
+	/*提示消息：等待您完善更多的应用 */
+	const char tips[] = {0xE7,0xAD,0x89,0xE5,0xBE,0x85,0xE6,0x82,0xA8,0xE5,0xAE,0x8C,0xE5,0x96,0x84,0xE6,0x9B,0xB4,0xE5,0xA4,0x9A,0xE7,0x9A,0x84,0xE5,0xBA,0x94,0xE7,0x94,0xA8,0x20};
+	HANDLE_LIST *hUser = hAPPLinkedList_NewNode();
 	
 	/* 创建电话窗口 */
-	hCamera->hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbCamera, 0);	
+	hUser->hAPP = WM_CreateWindowAsChild(0, 0, WinPara.xSizeWin,WinPara.ySizeWin ,WinPara.hWinMain , WM_CF_SHOW | WM_CF_STAYONTOP, _cbUserAPP, 0);	
 	
 	/* 记录当前窗口 */
 	/* 添加结点到链表 */
-	hAPPLinkedList_AddTail(hCamera);
+	hAPPLinkedList_AddTail(hUser);
 	/* 向ctrl窗口发送消息 */
 	WM_SendMessageNoPara(WinPara.hWinCtrl,MY_MESSAGE_CTRLCHANGE);
 	
-	
-	GUI_MessageBox(tips,"error",GUI_MESSAGEBOX_CF_MOVEABLE);
+	/* show sorry */
+	GUI_MessageBox(tips,"sorry",GUI_MESSAGEBOX_CF_MOVEABLE);
 
-	
-	/* 初始化摄像头 */
-	//Camera_Init();
 
 }
+
 
 

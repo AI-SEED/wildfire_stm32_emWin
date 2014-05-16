@@ -6,7 +6,7 @@
 
 
 
-Wildfire STM32 ISO-MINI development board program. 
+Wildfire STM32 ISO development board STemwin(ucgui) program. 
 
 forum    :http://www.chuxue123.com
 shop	 :http://firestm32.taobao.com

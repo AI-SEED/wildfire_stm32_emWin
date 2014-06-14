@@ -145,7 +145,8 @@ static void LcdWriteDataMultiple(U16 * pData, int NumItems) {
 *   Reads multiple values from a display register.
 */
 static void LcdReadDataMultiple(U16 * pData, int NumItems) {
-	*pData = ILI9341_RAM;					//ili9341读取的第一个数据为无效数据，舍弃
+  //ili9341读取的第一个数据为无效数据，舍弃(原来没有使用config.numdummyreads参数的时候需要这个语句)
+	//*pData = ILI9341_RAM;					
   while (NumItems--) {
     // ... TBD by user
 		*pData++ = ILI9341_RAM;					//modify by fire
@@ -183,7 +184,12 @@ void LCD_X_Config(void) {
   //
   // Orientation
   //
-  Config.Orientation = GUI_MIRROR_Y|GUI_MIRROR_X;					//modify by fire 原值为GUI_SWAP_XY | GUI_MIRROR_Y
+  Config.FirstCOM = 0;                                          //modify by fire
+  Config.FirstSEG = 0;                                          //modify by fire  
+	Config.Orientation = GUI_MIRROR_Y|GUI_MIRROR_X;								//modify by fire 竖屏
+// Config.Orientation = GUI_SWAP_XY | GUI_MIRROR_Y;					    //modify by fire  横屏		
+  Config.NumDummyReads = 2;                                     //modify by fire 读取的第二个数据才是真实数据
+
   GUIDRV_FlexColor_Config(pDevice, &Config);
   //
   // Set controller and operation mode

@@ -39,21 +39,19 @@ Purpose     : Config / System dependent externals for GUI
 
 void GUI_TOUCH_X_ActivateX(void) 
 {
-
+ // XPT2046_WriteCMD(0x90);
 }
 
 
 void GUI_TOUCH_X_ActivateY(void)
 {
-
+  //XPT2046_WriteCMD(0xd0);
 }
 
 
 int  GUI_TOUCH_X_MeasureX(void) 
 {
-
-	TOUCH_Scan();										
-	return(g_tTP.usAdcNowX);
+    return XPT2046_ReadAdc_Fliter(CHY);
 
 }
 
@@ -61,8 +59,8 @@ int  GUI_TOUCH_X_MeasureX(void)
 int  GUI_TOUCH_X_MeasureY(void) 
 {	
 
-	return(g_tTP.usAdcNowY);	
+    return XPT2046_ReadAdc_Fliter(CHX);
+
 
 }
-
 

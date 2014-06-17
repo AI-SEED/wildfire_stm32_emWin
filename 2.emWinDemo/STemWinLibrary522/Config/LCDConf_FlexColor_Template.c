@@ -69,10 +69,11 @@ Purpose     : Display controller configuration (single layer)
 #define YSIZE_PHYS  320 // To be adapted to y-screen size
 
 //modify by fire 以屏幕中“野火”字样为正面的竖屏为正方向，使用touch demo测出上下左右的ad值
-#define TOUCH_AD_TOP 	 				3776
-#define TOUCH_AD_BOTTOM  			218
-#define TOUCH_AD_LEFT 	 			235
-#define TOUCH_AD_RIGHT 	 			3821
+#define TOUCH_AD_TOP 	 				3802  //YPhys0
+#define TOUCH_AD_BOTTOM  			189   //YPhys1
+#define TOUCH_AD_LEFT 	 			213   //XPhys0
+#define TOUCH_AD_RIGHT 	 			3859  //XPhys1
+
 
 /*********************************************************************
 *
@@ -151,7 +152,8 @@ static void LcdWriteDataMultiple(U16 * pData, int NumItems) {
 *   Reads multiple values from a display register.
 */
 static void LcdReadDataMultiple(U16 * pData, int NumItems) {
-	//*pData = ILI9341_RAM;					//ili9341读取的第一个数据为无效数据，舍弃(原来没有使用config.numdummyreads参数的时候需要这个语句)
+  //ili9341读取的第一个数据为无效数据，舍弃(原来没有使用config.numdummyreads参数的时候需要这个语句)
+	//*pData = ILI9341_RAM;					
   while (NumItems--) {
     // ... TBD by user
 		*pData++ = ILI9341_RAM;					//modify by fire
@@ -189,12 +191,11 @@ void LCD_X_Config(void) {
   //
   // Orientation
   //
-  
   Config.FirstCOM = 0;                                          //modify by fire
   Config.FirstSEG = 0;                                          //modify by fire  
 	Config.Orientation = GUI_MIRROR_Y|GUI_MIRROR_X;								//modify by fire 竖屏
 // Config.Orientation = GUI_SWAP_XY | GUI_MIRROR_Y;					    //modify by fire  横屏		
-  Config.NumDummyReads = 2;                                     //modify by fire 读取的第二个数据才是真实数据
+  Config.NumDummyReads = 2;                                     //modify by fire 读取的第二个数据才是真实数据		
 
   GUIDRV_FlexColor_Config(pDevice, &Config);
   //
@@ -210,10 +211,10 @@ void LCD_X_Config(void) {
 	GUI_TOUCH_SetOrientation((GUI_MIRROR_X * LCD_GetMirrorXEx(0)) |
               (GUI_MIRROR_Y * LCD_GetMirrorYEx(0)) |
               (GUI_SWAP_XY  * LCD_GetSwapXYEx (0)));
-	
+
 	/* modify by fire 设置触摸校准 */	
-	GUI_TOUCH_Calibrate(GUI_COORD_X, 0, 240, TOUCH_AD_RIGHT ,TOUCH_AD_LEFT );
-  GUI_TOUCH_Calibrate(GUI_COORD_Y, 0, 320,TOUCH_AD_BOTTOM ,TOUCH_AD_TOP );
+	GUI_TOUCH_Calibrate(GUI_COORD_X, 0, 240-1, TOUCH_AD_RIGHT ,TOUCH_AD_LEFT );
+  GUI_TOUCH_Calibrate(GUI_COORD_Y, 0, 320-1,TOUCH_AD_BOTTOM ,TOUCH_AD_TOP );
 
 }
 

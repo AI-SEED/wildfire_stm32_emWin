@@ -688,7 +688,7 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>10</ColumnNumber>
+      <ColumnNumber>11</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>14</TopLine>
       <CurrentLine>66</CurrentLine>
@@ -786,7 +786,7 @@
       <Focus>0</Focus>
       <ColumnNumber>15</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
+      <TopLine>2</TopLine>
       <CurrentLine>6</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\lcd\bsp_touch.c</PathWithFileName>
@@ -890,7 +890,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1638</TopLine>
+      <TopLine>1639</TopLine>
       <CurrentLine>1653</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\ff9\ff.c</PathWithFileName>
@@ -960,10 +960,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>39</ColumnNumber>
+      <ColumnNumber>30</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>209</TopLine>
+      <CurrentLine>235</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\STemWinLibrary522\Config\LCDConf_FlexColor_Template.c</PathWithFileName>
       <FilenameWithoutPath>LCDConf_FlexColor_Template.c</FilenameWithoutPath>
@@ -1034,7 +1034,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
+      <TopLine>2</TopLine>
       <CurrentLine>14</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\Demo\GUIDEMO_Fatfs.c</PathWithFileName>

@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2013-xx-xx
-  * @brief   测试led
+  * @brief   emWin文件系统
   ******************************************************************************
   * @attention
   *
@@ -18,10 +18,12 @@
 #include "stm32f10x.h"
 #include "bsp_led.h"
 #include "GUI.h"
+#include "diskio.h"
 #include "bsp_touch.h"
 #include "bsp_SysTick.h"
 #include "bsp_usart1.h"
 #include "bsp_sdio_sdcard.h"
+#include "bsp_fsmc_sram.h"
 
 
 extern void Touch_MainTask(void);
@@ -42,9 +44,12 @@ int main(void)
 	
 	/* 初始化定时器 */
 	SysTick_Init();
+  
+  /* 配置 FSMC Bank1 NOR/SRAM3 */
+  FSMC_SRAM_Init();
 	
-	/* Sdio Interrupt Config */
-	NVIC_Configuration();	
+	/*初始化sd卡*/
+	disk_initialize(0);  
 	
 	/*CRC和emWin没有关系，只是他们为了库的保护而做的，这样STemWin的库只能用在ST的芯片上面，别的芯片是无法使用的。 */
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);

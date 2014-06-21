@@ -27,6 +27,7 @@
 #include "stm32f10x_it.h"
 #include "bsp_sdio_sdcard.h"	
 #include "GUI.h"
+#include <stdio.h>
 
 extern __IO int32_t OS_TimeMS;
 extern void LED_Toggle(void);
@@ -190,4 +191,10 @@ void SDIO_IRQHandler(void)
   SD_ProcessIRQSrc();
 }
 
+
+void SD_SDIO_DMA_IRQHANDLER(void)
+{
+  /* Process DMA2 Stream3 or DMA2 Stream6 Interrupt Sources */
+  SD_ProcessDMAIRQ();
+}
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

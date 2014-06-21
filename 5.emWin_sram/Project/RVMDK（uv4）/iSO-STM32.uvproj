@@ -44,7 +44,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\..\Output\</OutputDirectory>
-          <OutputName>流水灯</OutputName>
+          <OutputName>emWin_sram</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -351,7 +351,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\STemWinLibrary522\inc;..\..\STemWinLibrary522\Config;..\..\User\lcd;..\..\User\SysTick;..\..\Demo;..\..\User\usart;..\..\User\sdcard;..\..\ff9</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\Led;..\..\STemWinLibrary522\inc;..\..\STemWinLibrary522\Config;..\..\User\lcd;..\..\User\SysTick;..\..\Demo;..\..\User\usart;..\..\User\sdcard;..\..\ff9;..\..\User\sram</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -606,6 +606,11 @@
               <FileName>bsp_sdio_sdcard.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\sdcard\bsp_sdio_sdcard.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fsmc_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\sram\bsp_fsmc_sram.c</FilePath>
             </File>
           </Files>
         </Group>

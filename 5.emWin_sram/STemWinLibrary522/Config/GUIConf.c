@@ -52,6 +52,7 @@ Purpose     : Display controller initialization
   */
 
 #include "GUI.h"
+#include "bsp_fsmc_sram.h"
 
 /*********************************************************************
 *
@@ -64,6 +65,7 @@ Purpose     : Display controller initialization
 //
 #define GUI_NUMBYTES  1024*53								//modify by fire 原值为 0x200000
 
+#define GUI_BLOCKSIZE 0x80
 /*********************************************************************
 *
 *       Public code
@@ -79,6 +81,7 @@ Purpose     : Display controller initialization
 *   available memory for the GUI.
 */
 void GUI_X_Config(void) {
+	#if 0
   //
   // 32 bit aligned memory area
   //
@@ -87,10 +90,27 @@ void GUI_X_Config(void) {
   // Assign memory to emWin
   //
   GUI_ALLOC_AssignMemory(aMemory, GUI_NUMBYTES);
+  
+   GUI_ALLOC_SetAvBlockSize(GUI_BLOCKSIZE);
   //
   // Set default font
   //
   GUI_SetDefaultFont(GUI_FONT_6X8);
+	#else 
+	  //
+  // 32 bit aligned memory area
+  //
+  //
+  // Assign memory to emWin
+  //
+  GUI_ALLOC_AssignMemory((U32 *)Bank1_SRAM3_ADDR, 1024*1024);
+  
+  GUI_ALLOC_SetAvBlockSize(GUI_BLOCKSIZE);
+  //
+  // Set default font
+  //
+  GUI_SetDefaultFont(GUI_FONT_6X8);
+	#endif
 }
 
 /*************************** End of file ****************************/

@@ -62,8 +62,9 @@ Purpose     : Display controller initialization
 //
 // Define the available number of bytes available for the GUI
 //
-#define GUI_NUMBYTES  1024*53								//modify by fire 原值为 0x200000
+#define GUI_NUMBYTES  1024*50								//modify by fire ԭ 0x200000
 
+#define GUI_BLOCKSIZE 0x80
 /*********************************************************************
 *
 *       Public code
@@ -87,6 +88,8 @@ void GUI_X_Config(void) {
   // Assign memory to emWin
   //
   GUI_ALLOC_AssignMemory(aMemory, GUI_NUMBYTES);
+  
+  GUI_ALLOC_SetAvBlockSize(GUI_BLOCKSIZE);
   //
   // Set default font
   //

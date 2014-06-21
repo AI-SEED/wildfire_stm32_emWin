@@ -281,13 +281,13 @@ void SDIO_IRQHandler(void)
   SD_ProcessIRQSrc();
 }
 
-#if 1
+
 void SD_SDIO_DMA_IRQHANDLER(void)
 {
   /* Process DMA2 Stream3 or DMA2 Stream6 Interrupt Sources */
   SD_ProcessDMAIRQ();
 }
-#endif
+
 
 /* ov7725 场中断 服务程序 */
 //void EXTI0_IRQHandler(void)

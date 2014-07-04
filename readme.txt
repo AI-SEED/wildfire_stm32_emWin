@@ -2,7 +2,7 @@
 
 
 Ò°»ðemWin½Ì³ÌGit²Ö¿â: 
-https://git.oschina.net/wildfireteam/wildfire_stm32_emwin.git
+http://git.oschina.net/wildfireteam/wildfire_stm32_emWin.git
 
 
 ÂÛÌ³    :http://www.chuxue123.com
